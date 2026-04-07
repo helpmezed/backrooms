@@ -186,15 +186,6 @@
             </button>
         </div>
     </div>
-        <div class="header-title stencil-font">BACKROOMS <span>PRIVATE CHAT</span></div>
-        <button id="invite-btn" class="stencil-font">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-            </svg>
-            Invite Link
-        </button>
-    </div>
 
     <div id="popup-layer"></div>
     <div id="chat-container"></div>
@@ -437,7 +428,7 @@
         }
     });
 
-  // --- Auto-Login Logic ---
+    // --- Auto-Login Logic ---
     // 1. Check if the user is already saved in the browser when the page loads
     window.addEventListener('DOMContentLoaded', () => {
         const savedUser = localStorage.getItem('backroomsUser');
@@ -481,7 +472,7 @@
     });
 
     // ==========================================
-    // DO NOT DELETE ANYTHING BELOW THIS LINE!
+    // EVERYTHING BELOW IS YOUR ORIGINAL CODE
     // ==========================================
 
     chatInput.addEventListener('input', () => {
@@ -493,6 +484,18 @@
 
     // --- Drag & Drop Handling ---
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        inputArea.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, false);
+    });
+    inputArea.addEventListener('dragover', () => inputArea.classList.add('drag-over'));
+    inputArea.addEventListener('dragleave', () => inputArea.classList.remove('drag-over'));
+    inputArea.addEventListener('drop', (e) => {
+        inputArea.classList.remove('drag-over');
+        handleFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
     function handleFiles(files) {
         selectedFiles = Array.from(files);
