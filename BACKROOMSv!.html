@@ -171,6 +171,22 @@
 <div id="app-container">
     <div id="app-header">
         <div class="header-title stencil-font">BACKROOMS <span>PRIVATE CHAT</span></div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button id="invite-btn" class="stencil-font">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                Invite Link
+            </button>
+            
+            <button id="disconnect-btn" class="stencil-font" style="background: rgba(255, 51, 51, 0.1); border: 1px solid #ff3333; color: #ff3333; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.2s;">
+                Disconnect
+            </button>
+        </div>
+    </div>
+        <div class="header-title stencil-font">BACKROOMS <span>PRIVATE CHAT</span></div>
         <button id="invite-btn" class="stencil-font">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -198,7 +214,7 @@
         
         <div id="input-wrapper">
             <div id="file-preview-area"></div>
-            <textarea id="chat-input" placeholder="Transmit message... (Markdown supported: **bold**, *italic*, `code`)" rows="1"></textarea>
+            <textarea id="chat-input" placeholder="..." rows="1"></textarea>
         </div>
         
         <button class="btn stencil-font" id="send-btn">Send</button>
@@ -421,17 +437,52 @@
         }
     });
 
+  // --- Auto-Login Logic ---
+    // 1. Check if the user is already saved in the browser when the page loads
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedUser = localStorage.getItem('backroomsUser');
+        if (savedUser) {
+            // If we found saved data, turn it back into a JavaScript object
+            currentUser = JSON.parse(savedUser);
+            
+            // Hide the login screen and show the app
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            
+            showNotification(`[SYS] Welcome back, ${currentUser.name}`, 'success');
+            chatInput.focus();
+        }
+    });
+
+    // 2. Upgraded Login Function
     function handleLogin() {
         const name = document.getElementById('username-input').value.trim();
         if (name) currentUser.name = name;
+        
+        // SAVE the user to the browser's memory
+        localStorage.setItem('backroomsUser', JSON.stringify(currentUser));
+
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-container').style.display = 'flex';
         playBeep('receive');
         showNotification(`[SYS] ${currentUser.name} connected`);
         chatInput.focus();
     }
+    
     document.getElementById('join-btn').addEventListener('click', handleLogin);
     document.getElementById('username-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleLogin(); } });
+
+    // 3. Disconnect Logic (Log Out)
+    document.getElementById('disconnect-btn').addEventListener('click', () => {
+        // Erase the memory
+        localStorage.removeItem('backroomsUser');
+        // Reload the page to reset everything
+        window.location.reload();
+    });
+
+    // ==========================================
+    // DO NOT DELETE ANYTHING BELOW THIS LINE!
+    // ==========================================
 
     chatInput.addEventListener('input', () => {
         chatInput.style.height = 'auto'; chatInput.style.height = (chatInput.scrollHeight) + 'px';
@@ -442,18 +493,6 @@
 
     // --- Drag & Drop Handling ---
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        inputArea.addEventListener(eventName, e => {
-            e.preventDefault();
-            e.stopPropagation();
-        }, false);
-    });
-    inputArea.addEventListener('dragover', () => inputArea.classList.add('drag-over'));
-    inputArea.addEventListener('dragleave', () => inputArea.classList.remove('drag-over'));
-    inputArea.addEventListener('drop', (e) => {
-        inputArea.classList.remove('drag-over');
-        handleFiles(e.dataTransfer.files);
-    });
-    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
     function handleFiles(files) {
         selectedFiles = Array.from(files);
