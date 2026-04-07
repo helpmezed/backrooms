@@ -1,50 +1,58 @@
-// 1. Import required tools
-const express = require('express'); // Express makes building web servers easier
-const app = express(); // Create our app instance
-const http = require('http').Server(app); // Wrap Express inside a standard HTTP server
-const io = require('socket.io')(http); // Attach Socket.io to our HTTP server for real-time communication
-const path = require('path'); // A built-in Node tool to safely connect file paths
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
+const path = require('path');
 
-// 2. Serve the Chat Interface
-// When someone visits your website's main URL ('/'), send them your HTML file
-app.get('/', (req, res) => {
-    // Note: Updated this to match your actual file name!
-    const filePath = path.join(__dirname, 'BACKROOMSv!.html');
-    
-    // Send the file, and log an error to the server console if it fails to load
-    res.sendFile(filePath, (err) => {
-        if (err) {
-            console.error("Error loading the Backrooms interface:", err);
-            res.status(500).send("Transmission failed. File not found.");
-        }
-    });
+// Initialize Socket.io with a 10MB upload limit for images/gifs
+const io = require('socket.io')(http, {
+    maxHttpBufferSize: 1e7 
 });
 
-// 3. Handle Real-Time Connections
-// This block listens for new users connecting via Socket.io
-io.on('connection', (socket) => {
-    // A unique ID is assigned to every user who connects
-    console.log(`[SYS] A user linked to the Backrooms... (ID: ${socket.id})`);
+// This array stores the last 5 messages sent so the chat isn't empty when you join
+let messageHistory = []; 
 
-    // Listen for incoming messages labeled 'chat message' from this specific user
+// Serve your main HTML file
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+io.on('connection', (socket) => {
+    // 1. Tell everyone the new total user count immediately
+    io.emit('user count', io.engine.clientsCount);
+    console.log(`User connected. Total: ${io.engine.clientsCount}`);
+    
+    // 2. Send the last 5 messages to the new user so they see the context
+    socket.emit('load history', messageHistory);
+
+    // 3. Listen for new messages
     socket.on('chat message', (data) => {
-        // Broadcast the received data to EVERYONE currently connected
+        // Basic Sanitization: Removes any sneaky HTML tags someone might try to type
+        if (data.text) {
+            data.text = data.text.replace(/<[^>]*>?/gm, ''); 
+        }
+
+        // Add the new message to our history
+        messageHistory.push(data);
+        
+        // If we have more than 5 messages, remove the oldest one
+        if (messageHistory.length > 5) {
+            messageHistory.shift();
+        }
+        
+        // Send the message to everyone online
         io.emit('chat message', data); 
     });
 
-    // Listen for when this specific user closes their browser or loses internet
+    // 4. Handle Disconnections
     socket.on('disconnect', () => {
-        console.log(`[SYS] Connection lost... (ID: ${socket.id})`);
+        // Update everyone on the new user count when someone leaves
+        io.emit('user count', io.engine.clientsCount);
+        console.log(`User disconnected. Total: ${io.engine.clientsCount}`);
     });
 });
 
-// 4. Start the Server
-// Use the port assigned by your host (like Render), or default to 3000 on your computer
+// Set the port for Render (or localhost 3000)
 const PORT = process.env.PORT || 3000;
-
 http.listen(PORT, () => {
-    console.log(`=================================`);
-    console.log(` Server active on port ${PORT}`);
-    console.log(` Awaiting transmissions...`);
-    console.log(`=================================`);
+    console.log(`Server active on port ${PORT}`);
 });
