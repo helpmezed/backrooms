@@ -206,7 +206,7 @@
 </div>
 
 <script>
-    // --- 2. INITIALIZE SOCKET.IO ---
+    // --- INITIALIZE SOCKET.IO ---
     const socket = io(); 
 
     // --- Canvas Starfield ---
@@ -275,13 +275,25 @@
         }
     }
 
-    // --- Markdown Parser ---
+    // --- Upgraded Markdown & GIF Parser ---
     function parseMarkdown(text) {
         if (!text) return '';
+        
+        // 1. Sanitize the text
         let html = text.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+        
+        // 2. Apply bold, italic, and code markdown
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
         html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+        
+        // 3. Auto-Embed GIF and Image Links
+        const imageRegex = /(https?:\/\/[^\s]+?\.(?:gif|png|jpg|jpeg|webp)(?:\?[^\s]*)?)/gi;
+        
+        html = html.replace(imageRegex, (match) => {
+            return `<img src="${match}" class="media-attachment" alt="Embedded Media" style="max-width: 100%; border-radius: 8px; margin-top: 8px; border: 1px solid rgba(0, 210, 255, 0.3);">`;
+        });
+
         return html;
     }
 
@@ -467,7 +479,7 @@
         setTimeout(() => { btn.style.color = ''; }, 1000);
     }
 
-    // --- 3. SOCKET.IO SEND MESSAGE ---
+    // --- SOCKET.IO SEND MESSAGE ---
     async function handleSend() {
         const text = chatInput.value;
         if (!text.trim() && selectedFiles.length === 0) return;
@@ -507,7 +519,7 @@
     sendBtn.addEventListener('click', handleSend);
     chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } });
 
-    // --- 4. SOCKET.IO RECEIVE MESSAGE ---
+    // --- SOCKET.IO RECEIVE MESSAGE ---
     socket.on('chat message', (data) => {
         renderIncomingMessage(data);
     });
