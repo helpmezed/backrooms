@@ -1,58 +1,83 @@
 const express = require('express');
+const compression = require('compression');
+const helmet = require('helmet');
+const path = require('path');
+
 const app = express();
 const http = require('http').Server(app);
-const path = require('path');
 
 // Initialize Socket.io with a 10MB upload limit for images/gifs
 const io = require('socket.io')(http, {
     maxHttpBufferSize: 1e7 
 });
 
-// This array stores the last 5 messages sent so the chat isn't empty when you join
+// --- Middleware ---
+// helmet() adds security headers to protect against common web vulnerabilities
+app.use(helmet({
+    contentSecurityPolicy: false, // Set to false to allow external fonts/scripts like Google Fonts
+}));
+
+// compression() reduces the size of the response body, making the app load faster
+app.use(compression());
+
+// --- Chat History ---
+// Stores the last 5 messages so the chat isn't empty upon connection
 let messageHistory = []; 
 
-// Serve your main HTML file
+// --- Routes ---
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// --- Socket Logic ---
 io.on('connection', (socket) => {
-    // 1. Tell everyone the new total user count immediately
-    io.emit('user count', io.engine.clientsCount);
-    console.log(`User connected. Total: ${io.engine.clientsCount}`);
     
-    // 2. Send the last 5 messages to the new user so they see the context
+    // 1. Update User Count
+    // Tell everyone the new total user count immediately
+    io.emit('user count', io.engine.clientsCount);
+    console.log(`Connection established. Active Nodes: ${io.engine.clientsCount}`);
+    
+    // 2. Sync History
+    // Send the last 5 messages to the new user for context
     socket.emit('load history', messageHistory);
 
-    // 3. Listen for new messages
+    // 3. Messaging Logic
     socket.on('chat message', (data) => {
-        // Basic Sanitization: Removes any sneaky HTML tags someone might try to type
+        // Basic Sanitization: Strip HTML tags to prevent XSS
         if (data.text) {
             data.text = data.text.replace(/<[^>]*>?/gm, ''); 
         }
 
-        // Add the new message to our history
+        // Manage history queue (Maintains only the last 5)
         messageHistory.push(data);
-        
-        // If we have more than 5 messages, remove the oldest one
         if (messageHistory.length > 5) {
             messageHistory.shift();
         }
         
-        // Send the message to everyone online
+        // Broadcast the message to all connected clients
         io.emit('chat message', data); 
     });
 
-    // 4. Handle Disconnections
+    // 4. Typing Indicators
+    // Listen for typing events and broadcast to everyone else
+    socket.on('typing', (name) => {
+        socket.broadcast.emit('typing', name);
+    });
+
+    socket.on('stop typing', () => {
+        socket.broadcast.emit('stop typing');
+    });
+
+    // 5. Disconnection
     socket.on('disconnect', () => {
-        // Update everyone on the new user count when someone leaves
         io.emit('user count', io.engine.clientsCount);
-        console.log(`User disconnected. Total: ${io.engine.clientsCount}`);
+        console.log(`Connection lost. Active Nodes: ${io.engine.clientsCount}`);
     });
 });
 
-// Set the port for Render (or localhost 3000)
+// --- Server Initialization ---
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, () => {
-    console.log(`Server active on port ${PORT}`);
+    console.log(`--- BACKROOMS PROTOCOL ACTIVE ---`);
+    console.log(`Listening on Port: ${PORT}`);
 });
