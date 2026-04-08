@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backrooms Private Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Saira+Stencil+One&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #050508; color: #e2e8f0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .stencil-font { font-family: 'Saira Stencil One', cursive; font-weight: normal; }
+        #starfield { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; background-image: radial-gradient(circle at 15% 50%, rgba(20, 15, 45, 0.8), transparent 50%), radial-gradient(circle at 85% 30%, rgba(10, 30, 50, 0.8), transparent 50%); }
+        #notification-container { position: fixed; top: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+        .system-notification { background: rgba(0, 210, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(0, 210, 255, 0.3); border-left: 4px solid #00d2ff; color: #fff; padding: 14px 24px; border-radius: 4px 10px 10px 4px; font-size: 14px; letter-spacing: 1px; animation: hudSlideIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .system-notification.success { border-left-color: #00ff66; }
+        .system-notification.error { border-left-color: #ff3333; }
+        @keyframes hudSlideIn { 0% { transform: translateX(120%); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+        #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 100; background: rgba(5, 5, 8, 0.95); backdrop-filter: blur(15px); transition: opacity 0.5s; }
+        .login-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; display: flex; flex-direction: column; gap: 20px; }
+        .avatar-upload-wrapper { width: 100px; height: 100px; margin: 0 auto; border-radius: 50%; border: 2px dashed rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; }
+        #avatar-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .login-input { width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 16px; border-radius: 10px; outline: none; }
+        #app-container { display: none; flex-direction: column; height: 100%; width: 50%; margin: 0 auto; background: rgba(10, 10, 15, 0.4); border-left: 1px solid rgba(255, 255, 255, 0.05); border-right: 1px solid rgba(255, 255, 255, 0.05); opacity: 0; transition: opacity 0.5s; }
+        @media (max-width: 800px) { #app-container { width: 100%; } }
+        #app-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); background: rgba(10, 10, 15, 0.8); }
+        .header-controls { display: flex; align-items: center; gap: 15px; }
+        #user-count-badge { background: rgba(0, 210, 255, 0.1); border: 1px solid rgba(0, 210, 255, 0.3); padding: 6px 12px; border-radius: 20px; font-size: 11px; color: #00d2ff; display: flex; align-items: center; gap: 6px; }
+        .pulse-dot { width: 6px; height: 6px; background: #00ff66; border-radius: 50%; animation: blink 2s infinite; }
+        @keyframes blink { 50% { opacity: 0.3; } }
+        #chat-container { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+        .message { padding: 14px 18px; border-radius: 4px 12px 12px 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 3px solid #00d2ff; max-width: 90%; animation: glitch-in 0.4s ease-out; }
+        @keyframes glitch-in { 0% { opacity: 0; transform: translateY(10px); filter: blur(5px); } 100% { opacity: 1; transform: translateY(0); filter: blur(0); } }
+        .user-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .chat-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+        .username { color: #00d2ff; font-size: 14px; }
+        .timestamp { margin-left: auto; font-size: 10px; color: rgba(255, 255, 255, 0.3); }
+        .media-attachment { max-width: 100%; border-radius: 8px; margin-top: 10px; display: block; border: 1px solid rgba(255, 255, 255, 0.1); }
+        #input-area { padding: 20px 24px; background: rgba(10, 10, 15, 0.8); border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; gap: 12px; align-items: flex-end; }
+        #input-wrapper { flex: 1; background: rgba(0, 0, 0, 0.4); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; }
+        #chat-input { width: 100%; background: transparent; border: none; color: #fff; padding: 16px; outline: none; resize: none; min-height: 52px; }
+        .btn { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); color: white; border: none; padding: 0 24px; border-radius: 10px; cursor: pointer; height: 52px; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #file-preview-area { display: flex; gap: 10px; padding: 10px; overflow-x: auto; }
+        #file-preview-area:empty { display: none; }
+        .preview-item { width: 50px; height: 50px; border-radius: 5px; border: 1px solid #00d2ff; object-fit: cover; }
+    </style>
+</head>
+<body>
+    <canvas id="starfield"></canvas>
+    <div id="notification-container"></div>
+    <div id="login-screen">
+        <div class="login-card">
+            <h1 class="stencil-font" style="color:#00d2ff">Link Established</h1>
+            <label for="avatar-input" class="avatar-upload-wrapper">
+                <span id="upload-icon">📷</span>
+                <img id="avatar-preview" src="" alt="Avatar">
+            </label>
+            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+            <input type="text" id="username-input" class="login-input" placeholder="Enter Callsign...">
+            <button class="btn stencil-font" id="join-btn" disabled>Initializing Comm Link...</button>
+        </div>
+    </div>
+    <div id="app-container">
+        <div id="app-header">
+            <div class="header-title stencil-font">BACKROOMS <span>CHAT</span></div>
+            <div class="header-controls">
+                <div id="user-count-badge" class="stencil-font"><div class="pulse-dot"></div>ONLINE: <span id="count-number">0</span></div>
+                <button id="disconnect-btn" class="stencil-font" style="background:none; border:1px solid #ff3333; color:#ff3333; padding:5px 10px; border-radius:5px; cursor:pointer">Disconnect</button>
+            </div>
+        </div>
+        <div id="chat-container"></div>
+        <div id="input-area">
+            <label for="file-input" style="cursor:pointer; padding:15px; background:rgba(255,255,255,0.05); border-radius:10px">📎</label>
+            <input type="file" id="file-input" multiple style="display:none" accept="image/*">
+            <div id="input-wrapper">
+                <div id="file-preview-area"></div>
+                <textarea id="chat-input" placeholder="Type message..." rows="1"></textarea>
+            </div>
+            <button class="btn stencil-font" id="send-btn">Send</button>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Firebase Setup
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { projectId: 'demo-project' };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'backrooms-chat-default';
+
+    let currentUser = { name: 'Guest', avatarUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300d2ff"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4 0-7 2-7 6v1h14v-1c0-4-3-6-7-6z"/></svg>' };
+    let selectedFiles = [];
+    let unsubscribeMessages = null;
+    let unsubscribePresence = null;
+    let authUser = null;
+    let presenceInterval = null;
+
+    // Background Canvas Logic
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    // Initialize Auth
+    const initAuth = async () => {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (e) {
+            showNotification('Comm Link Failure: ' + e.message, 'error');
+        }
+    };
+
+    onAuthStateChanged(auth, user => {
+        authUser = user;
+        const joinBtn = document.getElementById('join-btn');
+        if (user) {
+            joinBtn.textContent = "Initialize";
+            joinBtn.disabled = false;
+        }
+    });
+
+    initAuth();
+
+    function showNotification(text, type = 'success') {
+        const container = document.getElementById('notification-container');
+        const notif = document.createElement('div');
+        notif.className = `system-notification ${type}`;
+        notif.textContent = `[SYS] ${text}`;
+        container.appendChild(notif);
+        setTimeout(() => {
+            notif.style.opacity = '0';
+            notif.style.transition = 'opacity 0.5s';
+            setTimeout(() => notif.remove(), 500);
+        }, 3000);
+    }
+
+    function setupListeners() {
+        if (!authUser) return;
+
+        // Messages Listener
+        unsubscribeMessages = onSnapshot(
+            collection(db, 'artifacts', appId, 'public', 'data', 'messages'), 
+            (snapshot) => {
+                const messages = [];
+                snapshot.forEach(doc => messages.push({id: doc.id, ...doc.data()}));
+                
+                // Sort messages locally (Rule 2: No complex queries)
+                messages.sort((a, b) => a.timestamp - b.timestamp);
+                
+                document.getElementById('chat-container').innerHTML = '';
+                messages.forEach(msg => renderMessage(msg));
+            }, 
+            (error) => {
+                showNotification("Sync error: " + error.message, 'error');
+            }
+        );
+
+        // Presence Listener
+        const presenceRef = collection(db, 'artifacts', appId, 'public', 'data', 'presence');
+        
+        const updatePresence = async () => {
+            if (!authUser) return;
+            await setDoc(doc(presenceRef, authUser.uid), { lastActive: Date.now() });
+        };
+
+        updatePresence();
+        presenceInterval = setInterval(updatePresence, 30000); // Update every 30s
+
+        unsubscribePresence = onSnapshot(presenceRef, (snapshot) => {
+            let onlineCount = 0;
+            const now = Date.now();
+            snapshot.forEach(doc => {
+                // Count users active in the last 60 seconds
+                if (now - doc.data().lastActive < 60000) {
+                    onlineCount++;
+                }
+            });
+            document.getElementById('count-number').textContent = onlineCount;
+        }, (error) => console.error(error));
+    }
+
+    function renderMessage(data) {
+        const container = document.getElementById('chat-container');
+        const div = document.createElement('div');
+        div.className = 'message';
+        div.innerHTML = `
+            <div class="user-header">
+                <img src="${data.user.avatarUrl}" class="chat-avatar">
+                <span class="username stencil-font">${data.user.name}</span>
+                <span class="timestamp">${data.displayTime}</span>
+            </div>
+            <div style="word-break:break-word">${data.text || ''}</div>
+        `;
+        
+        if (data.files && data.files.length > 0) {
+            data.files.forEach(f => {
+                const img = document.createElement('img');
+                img.src = f.data; 
+                img.className = 'media-attachment';
+                div.appendChild(img);
+            });
+        }
+        
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function handleSend() {
+        if (!authUser) return;
+        const inputEl = document.getElementById('chat-input');
+        const text = inputEl.value;
+        
+        if (!text.trim() && selectedFiles.length === 0) return;
+
+        // Base64 encode files (with size limit to prevent Firestore 1MB doc limit error)
+        const filePromises = selectedFiles.map(file => {
+            return new Promise((resolve, reject) => {
+                if (file.size > 500000) { // 500kb limit
+                    showNotification(`${file.name} is too large. Max 500KB.`, 'error');
+                    resolve(null);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = e => resolve({ type: file.type, data: e.target.result });
+                reader.readAsDataURL(file);
+            });
+        });
+
+        let files = await Promise.all(filePromises);
+        files = files.filter(f => f !== null);
+
+        const payload = {
+            user: currentUser,
+            text: text.trim(),
+            files: files,
+            timestamp: Date.now(),
+            displayTime: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+        };
+
+        try {
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'messages'), payload);
+            inputEl.value = '';
+            document.getElementById('file-input').value = '';
+            selectedFiles = [];
+            document.getElementById('file-preview-area').innerHTML = '';
+        } catch (e) {
+            showNotification('Failed to send: ' + e.message, 'error');
+        }
+    }
+
+    // --- UI Interactions ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const saved = localStorage.getItem('backroomsUser');
+        if (saved) {
+            currentUser = JSON.parse(saved);
+            document.getElementById('username-input').value = currentUser.name;
+            if (currentUser.avatarUrl !== 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300d2ff"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4 0-7 2-7 6v1h14v-1c0-4-3-6-7-6z"/></svg>') {
+                 document.getElementById('avatar-preview').src = currentUser.avatarUrl;
+                 document.getElementById('avatar-preview').style.display = 'block';
+                 document.getElementById('upload-icon').style.display = 'none';
+            }
+        }
+    });
+
+    function enterChat() {
+        document.getElementById('login-screen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('login-screen').style.display = 'none';
+            const app = document.getElementById('app-container');
+            app.style.display = 'flex';
+            setTimeout(() => app.style.opacity = '1', 50);
+            
+            setupListeners();
+            showNotification('Connected to encrypted node.', 'success');
+        }, 500);
+    }
+
+    document.getElementById('join-btn').onclick = () => {
+        const val = document.getElementById('username-input').value.trim();
+        if (val) currentUser.name = val;
+        localStorage.setItem('backroomsUser', JSON.stringify(currentUser));
+        enterChat();
+    };
+
+    document.getElementById('disconnect-btn').onclick = () => {
+        if (unsubscribeMessages) unsubscribeMessages();
+        if (unsubscribePresence) unsubscribePresence();
+        if (presenceInterval) clearInterval(presenceInterval);
+        
+        localStorage.removeItem('backroomsUser');
+        window.location.reload();
+    };
+
+    document.getElementById('file-input').onchange = (e) => {
+        selectedFiles = Array.from(e.target.files);
+        const area = document.getElementById('file-preview-area');
+        area.innerHTML = '';
+        selectedFiles.forEach(f => {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(f); 
+            img.className = 'preview-item';
+            area.appendChild(img);
+        });
+    };
+
+    document.getElementById('send-btn').onclick = handleSend;
+    
+    document.getElementById('chat-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
+    });
+
+    document.getElementById('avatar-input').onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (file.size > 100000) { // 100kb limit for avatar
+            showNotification('Avatar must be under 100KB.', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            currentUser.avatarUrl = ev.target.result;
+            document.getElementById('avatar-preview').src = ev.target.result;
+            document.getElementById('avatar-preview').style.display = 'block';
+            document.getElementById('upload-icon').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    };
+</script>
+</body>
+</html>
