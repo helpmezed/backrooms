@@ -459,13 +459,9 @@
             dateDivider.className = 'date-divider';
             dateDivider.innerHTML = `<span>${msgDate}</span>`;
             
-            // Insert the divider immediately before the typing indicator
-            const typingInd = document.getElementById('typing-indicator');
-            if (typingInd.parentNode === container) {
-                container.insertBefore(dateDivider, typingInd);
-            } else {
-                container.appendChild(dateDivider);
-            }
+            // CORRECTED: Fixed the DOM insertion bug that prevented rendering
+            container.appendChild(dateDivider);
+            
             lastMessageDate = msgDate;
         }
 
@@ -523,9 +519,8 @@
             ${replyBtnHtml}
         `;
         
-        // Append message before the typing indicator
-        const typingInd = document.getElementById('typing-indicator');
-        container.insertBefore(div, typingInd);
+        // CORRECTED: Fixed the DOM insertion bug that prevented rendering
+        container.appendChild(div);
 
         if (!isHistoryLoad && !isSelf) {
             playChime();
@@ -609,7 +604,7 @@
         const messageId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 
         socket.emit('chat message', {
-            id: messageId, // <--- ADD THIS LINE
+            id: messageId, 
             user: currentUser, 
             text, 
             files, 
