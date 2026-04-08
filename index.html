@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -82,23 +81,18 @@
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* --- Chat Messages --- */
-        #chat-container { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; position: relative; }
         
-        .message-wrapper { display: flex; flex-direction: column; max-width: 75%; animation: springIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transition: transform 0.2s ease; transform-origin: bottom left; }
+        .message-wrapper { display: flex; flex-direction: column; max-width: 75%; animation: springIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transition: transform 0.2s ease; transform-origin: bottom left; position: relative; }
         .message-wrapper.self { transform-origin: bottom right; }
-        .message-wrapper:hover { transform: translateY(-2px); }
         .message-wrapper.other { align-self: flex-start; }
         .message-wrapper.self { align-self: flex-end; align-items: flex-end; }
         
-        @keyframes springIn { 
-            0% { opacity: 0; transform: translateY(15px) scale(0.95); } 
-            100% { opacity: 1; transform: translateY(0) scale(1); } 
-        }
+        @keyframes springIn { 0% { opacity: 0; transform: translateY(15px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         
         .user-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding: 0 4px; }
         .self .user-header { flex-direction: row-reverse; }
         .chat-avatar { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; background: #000; border: 1px solid var(--user-color, var(--glass-border)); transition: all 0.3s ease; filter: sepia(0.2) hue-rotate(180deg) saturate(2); }
-        .message-wrapper:hover .chat-avatar { box-shadow: 0 0 10px rgba(var(--user-color-rgb), 0.4); }
         .username { font-family: var(--font-ui); font-size: 11px; color: var(--user-color, var(--text-muted)); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 8px rgba(var(--user-color-rgb), 0.3); }
         
         .message { padding: 12px 16px; font-size: 14px; line-height: 1.5; word-wrap: break-word; position: relative; border-radius: 4px; backdrop-filter: blur(5px); }
@@ -111,6 +105,30 @@
         .media-attachment { max-width: 100%; border-radius: 4px; margin-top: 8px; border: 1px solid var(--glass-border); transition: filter 0.2s ease; filter: contrast(1.1) brightness(0.9); }
         .media-attachment:hover { filter: contrast(1.2) brightness(1.1); }
 
+        /* --- Click to Reply Action Button --- */
+        .reply-action-btn { position: absolute; top: 50%; transform: translateY(-50%); opacity: 0; background: rgba(0, 238, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-family: var(--font-ui); font-size: 14px; z-index: 5; box-shadow: inset 0 0 5px rgba(0,238,255,0.2); }
+        .message-wrapper:hover .reply-action-btn { opacity: 1; }
+        .other .reply-action-btn { right: -40px; }
+        .self .reply-action-btn { left: -40px; }
+        .reply-action-btn:hover { background: rgba(0, 238, 255, 0.3); box-shadow: 0 0 12px rgba(0, 238, 255, 0.6); transform: translateY(-50%) scale(1.1); }
+
+        /* --- Nested Reply Snippet --- */
+        .reply-snippet { background: rgba(0, 0, 0, 0.5); border-left: 2px solid var(--accent-cyan); padding: 8px 12px; margin-bottom: 10px; border-radius: 4px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: all 0.2s; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .reply-snippet:hover { background: rgba(0, 238, 255, 0.1); box-shadow: 0 0 10px rgba(0, 238, 255, 0.2); }
+        .snippet-name { font-family: var(--font-ui); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .snippet-text { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+
+        /* --- Internal Reply Modal (The Small Window) --- */
+        #reply-modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        #reply-modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(10, 15, 30, 0.95); border: 1px solid var(--accent-cyan); box-shadow: 0 0 40px rgba(0, 238, 255, 0.15), inset 0 0 20px rgba(0, 238, 255, 0.1); padding: 24px; border-radius: 8px; z-index: 1000; width: 90%; max-width: 450px; display: none; flex-direction: column; gap: 16px; opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #reply-modal.active, #reply-modal-overlay.active { display: flex; opacity: 1; }
+        #reply-modal.active { transform: translate(-50%, -50%) scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--glass-border); padding-bottom: 12px; }
+        .modal-title { font-family: var(--font-ui); color: var(--accent-cyan); letter-spacing: 2px; font-size: 12px; text-transform: uppercase; }
+        .modal-close { background: transparent; border: none; color: var(--accent-magenta); cursor: pointer; font-family: var(--font-ui); font-weight: bold; font-size: 16px; transition: transform 0.2s; }
+        .modal-close:hover { transform: scale(1.2); text-shadow: 0 0 10px var(--accent-magenta); }
+        #modal-body-content { font-size: 14px; line-height: 1.6; color: var(--text-main); max-height: 300px; overflow-y: auto; padding-right: 8px;}
+
         /* --- Typing Indicator --- */
         #typing-indicator { display: none; padding: 0 24px 12px; color: var(--accent-cyan); font-family: var(--font-ui); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -120,13 +138,18 @@
         .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes typePulse { 0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; } 40% { transform: scale(1.5); opacity: 1; } }
 
-        /* --- Input Area --- */
+        /* --- Input Area & Reply Preview Base --- */
         #input-area { padding: 16px 24px; background: rgba(3, 7, 18, 0.8); border-top: 1px solid var(--glass-border); display: flex; gap: 12px; align-items: flex-end; backdrop-filter: blur(10px); }
         .attach-btn { width: 40px; height: 40px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); font-family: var(--font-ui); font-size: 18px; transition: all 0.2s; flex-shrink: 0; margin-bottom: 2px;}
         .attach-btn:hover { background: rgba(0, 238, 255, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 238, 255, 0.2); }
 
         #input-wrapper { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden; transition: all 0.3s; }
         #input-wrapper:focus-within { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 238, 255, 0.15); }
+        
+        #reply-preview { display: none; padding: 10px 16px; background: rgba(0, 238, 255, 0.05); border-bottom: 1px solid rgba(0, 238, 255, 0.1); align-items: center; justify-content: space-between; animation: slideDown 0.2s ease; }
+        #cancel-reply-btn { background: transparent; border: none; color: var(--accent-magenta); font-family: var(--font-ui); cursor: pointer; font-size: 14px; transition: transform 0.2s; }
+        #cancel-reply-btn:hover { transform: scale(1.2); text-shadow: 0 0 8px var(--accent-magenta); }
+
         #chat-input { width: 100%; background: transparent; border: none; color: var(--text-main); padding: 12px 16px; font-size: 14px; outline: none; resize: none; min-height: 44px; max-height: 120px; font-family: var(--font-text); line-height: 1.5; }
         
         #file-preview-area { display: flex; gap: 8px; padding: 0; overflow-x: auto;}
@@ -175,10 +198,7 @@
 
 <div id="app-container">
     <div id="app-header">
-        <div class="header-title">
-            BACKROOM
-        </div>
-        
+        <div class="header-title">BACKROOM</div>
         <div class="header-controls">
             <div id="user-count-badge">
                 <div class="pulse-dot"></div>
@@ -189,7 +209,17 @@
         </div>
     </div>
 
-    <div id="chat-container"></div>
+    <div id="chat-container">
+        <div id="reply-modal-overlay"></div>
+        <div id="reply-modal">
+            <div class="modal-header">
+                <span class="modal-title">Decrypted Sequence</span>
+                <button class="modal-close" id="close-modal-btn">X</button>
+            </div>
+            <div class="user-header" id="modal-user-header" style="margin:0;"></div>
+            <div id="modal-body-content"></div>
+        </div>
+    </div>
     
     <div id="typing-indicator">
         <span id="typing-name">Entity</span> transmitting
@@ -201,6 +231,14 @@
         <input type="file" id="file-input" multiple style="display:none">
         
         <div id="input-wrapper">
+            <div id="reply-preview">
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                    <span id="reply-preview-name" style="font-family:var(--font-ui); color:var(--accent-cyan); font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase;"></span>
+                    <span id="reply-preview-text" style="color:var(--text-muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 300px;"></span>
+                </div>
+                <button id="cancel-reply-btn">X</button>
+            </div>
+
             <div id="file-preview-area"></div>
             <textarea id="chat-input" placeholder="Input sequence..." rows="1"></textarea>
         </div>
@@ -217,12 +255,14 @@
     const socket = io(); 
     let isConnected = true;
 
+    // Stores message data globally by ID so we can render full modals easily
+    const messageStore = {};
+    let activeReplyTarget = null;
+
     // --- Helper: Generate Unique Colors based on Username ---
     function stringToColor(str) {
         let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
+        for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
         const h = Math.abs(hash) % 360;
         return `hsl(${h}, 100%, 65%)`;
     }
@@ -232,14 +272,12 @@
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             const audioCtx = new AudioContext();
-            
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
             
             oscillator.type = 'square';
             oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime); 
             oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.15);
-            
             gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
             
@@ -328,19 +366,75 @@
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    // --- Messaging ---
+    // --- Messaging & Reply Logic ---
     function parseMarkdown(text) {
         let html = text.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
         const imgRegex = /(https?:\/\/[^\s]+?\.(?:gif|png|jpg|jpeg|webp))/gi;
         return html.replace(imgRegex, (m) => `<img src="${m}" class="media-attachment">`);
     }
 
+    // Triggered when user clicks the ↰ icon on a message
+    window.initiateReply = function(msgId) {
+        const msg = messageStore[msgId];
+        if(!msg) return;
+
+        // Save a lean payload so we don't broadcast huge base64 images unnecessarily
+        activeReplyTarget = {
+            id: msgId,
+            user: msg.user,
+            text: msg.text,
+            hasFiles: (msg.files && msg.files.length > 0)
+        };
+
+        document.getElementById('reply-preview-name').textContent = msg.user.name;
+        let preview = msg.text || '[ ENCRYPTED ATTACHMENT ]';
+        document.getElementById('reply-preview-text').textContent = preview;
+        
+        document.getElementById('reply-preview').style.display = 'flex';
+        document.getElementById('chat-input').focus();
+    };
+
+    document.getElementById('cancel-reply-btn').onclick = () => {
+        activeReplyTarget = null;
+        document.getElementById('reply-preview').style.display = 'none';
+    };
+
+    // Triggered when user clicks the nested snippet to view the modal
+    window.openReplyModal = function(msgId) {
+        const data = messageStore[msgId] || messageStore['reply_' + msgId];
+        if(!data) return;
+
+        const targetData = data.replyTo ? data.replyTo : data;
+        const userColor = stringToColor(targetData.user.name);
+
+        document.getElementById('modal-user-header').innerHTML = `
+            <img src="${targetData.user.avatarUrl}" class="chat-avatar" style="border-color: ${userColor}">
+            <span class="username" style="color: ${userColor}; text-shadow: 0 0 8px ${userColor}">${targetData.user.name}</span>
+        `;
+        
+        let bodyHtml = targetData.text ? parseMarkdown(targetData.text) : '';
+        if (targetData.hasFiles) bodyHtml += `<br/><br/><span style="color:var(--text-muted); font-size:12px;">[ DATA ATTACHMENTS OMITTED FROM PREVIEW ]</span>`;
+        
+        document.getElementById('modal-body-content').innerHTML = bodyHtml;
+        
+        document.getElementById('reply-modal-overlay').classList.add('active');
+        document.getElementById('reply-modal').classList.add('active');
+    };
+
+    document.getElementById('close-modal-btn').onclick = () => {
+        document.getElementById('reply-modal-overlay').classList.remove('active');
+        document.getElementById('reply-modal').classList.remove('active');
+    };
+
     function renderMessage(data, isHistoryLoad = false) {
         const container = document.getElementById('chat-container');
         const isAtBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
         const isSelf = data.user.name === currentUser.name;
         
-        // Generate user color
+        // Ensure every message has a unique ID for our global dictionary
+        if (!data.id) data.id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        messageStore[data.id] = data;
+
         const userColor = stringToColor(data.user.name);
 
         const div = document.createElement('div');
@@ -356,6 +450,23 @@
             `;
         }
 
+        // Handle nested reply snippets
+        let replyHtml = '';
+        if (data.replyTo) {
+            // Store the fallback payload in case the original message isn't in their current history buffer
+            messageStore['reply_' + data.id] = data; 
+            
+            const replyColor = stringToColor(data.replyTo.user.name);
+            const snippetText = data.replyTo.text || '[ ENCRYPTED ATTACHMENT ]';
+            
+            replyHtml = `
+                <div class="reply-snippet" onclick="openReplyModal('${data.id}')" style="border-left-color: ${replyColor}">
+                    <span class="snippet-name" style="color: ${replyColor}">${data.replyTo.user.name}</span>
+                    <span class="snippet-text">${snippetText}</span>
+                </div>
+            `;
+        }
+
         let mediaHtml = '';
         if (data.files) {
             data.files.forEach(f => {
@@ -365,13 +476,18 @@
             });
         }
 
+        // Hover action button
+        const replyBtnHtml = `<div class="reply-action-btn" onclick="initiateReply('${data.id}')">↰</div>`;
+
         div.innerHTML = `
             ${headerHtml}
             <div class="message" style="${!isSelf ? `--user-color: ${userColor};` : ''}">
+                ${replyHtml}
                 ${parseMarkdown(data.text)}
                 ${mediaHtml}
             </div>
             <span class="timestamp">${data.timestamp}</span>
+            ${replyBtnHtml}
         `;
         
         container.appendChild(div);
@@ -445,14 +561,22 @@
         }));
         
         const files = await Promise.all(filePromises);
+        
         socket.emit('chat message', {
-            user: currentUser, text, files, timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+            user: currentUser, 
+            text, 
+            files, 
+            timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+            replyTo: activeReplyTarget  // Attach the reply payload here
         });
         
+        // Reset UI
         input.value = '';
         input.style.height = 'auto';
         document.getElementById('file-preview-area').innerHTML = ''; 
         selectedFiles = [];
+        activeReplyTarget = null;
+        document.getElementById('reply-preview').style.display = 'none';
         socket.emit('stop typing');
     }
 
@@ -471,4 +595,3 @@
 </script>
 </body>
 </html>
-```
