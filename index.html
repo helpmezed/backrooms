@@ -590,7 +590,11 @@
         const timeStr = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
         const dateStr = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
 
+        // GENERATE ID HERE
+        const messageId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+
         socket.emit('chat message', {
+            id: messageId, // <--- ADD THIS LINE
             user: currentUser, 
             text, 
             files, 
