@@ -169,7 +169,7 @@
         .send-btn:disabled { background: transparent; border-color: var(--glass-border); color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
         
         .send-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; transform: translateY(-1px) translateX(1px); transition: transform 0.3s ease; }
-        .send-btn.animating .send-icon { animation: flySend 0.4s ease forwards; }
+        .send-btn.animating .send-icon { animation: flySend 0.4s forwards; }
 
         @keyframes flySend {
             0% { transform: translate(1px, -1px); opacity: 1; }
@@ -444,13 +444,8 @@
             dateDivider.className = 'date-divider';
             dateDivider.innerHTML = `<span>${msgDate}</span>`;
             
-            // Insert the divider immediately before the typing indicator
-            const typingInd = document.getElementById('typing-indicator');
-            if (typingInd.parentNode === container) {
-                container.insertBefore(dateDivider, typingInd);
-            } else {
-                container.appendChild(dateDivider);
-            }
+            // FIXED DOM INSERTION BUG
+            container.appendChild(dateDivider);
             lastMessageDate = msgDate;
         }
 
@@ -508,9 +503,8 @@
             ${replyBtnHtml}
         `;
         
-        // Append message before the typing indicator
-        const typingInd = document.getElementById('typing-indicator');
-        container.insertBefore(div, typingInd);
+        // FIXED DOM INSERTION BUG
+        container.appendChild(div);
 
         if (!isHistoryLoad && !isSelf) {
             playChime();
@@ -594,7 +588,7 @@
         const messageId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 
         socket.emit('chat message', {
-            id: messageId, // <--- ADD THIS LINE
+            id: messageId, 
             user: currentUser, 
             text, 
             files, 
