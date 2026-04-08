@@ -81,9 +81,9 @@
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* --- Chat Messages --- */
-        #chat-container { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; position: relative; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; position: relative; }
         
-        .message-wrapper { display: flex; flex-direction: column; max-width: 75%; animation: springIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transition: transform 0.2s ease; transform-origin: bottom left; position: relative; }
+        .message-wrapper { display: flex; flex-direction: column; max-width: 85%; animation: springIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transition: transform 0.2s ease; transform-origin: bottom left; position: relative; }
         .message-wrapper.self { transform-origin: bottom right; }
         .message-wrapper.other { align-self: flex-start; }
         .message-wrapper.self { align-self: flex-end; align-items: flex-end; }
@@ -92,42 +92,48 @@
         
         .user-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding: 0 4px; }
         .self .user-header { flex-direction: row-reverse; }
-        .chat-avatar { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; background: #000; border: 1px solid var(--user-color, var(--glass-border)); transition: all 0.3s ease; filter: sepia(0.2) hue-rotate(180deg) saturate(2); }
+        .chat-avatar { width: 26px; height: 26px; border-radius: 4px; object-fit: cover; background: #000; border: 1px solid var(--user-color, var(--glass-border)); transition: all 0.3s ease; filter: sepia(0.2) hue-rotate(180deg) saturate(2); }
         .username { font-family: var(--font-ui); font-size: 11px; color: var(--user-color, var(--text-muted)); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 8px rgba(var(--user-color-rgb), 0.3); }
         
-        .message { padding: 12px 16px; font-size: 14px; line-height: 1.5; word-wrap: break-word; position: relative; border-radius: 4px; backdrop-filter: blur(5px); }
+        /* Updated Padding and Font Size for Messages */
+        .message { padding: 16px 20px; font-size: 16px; line-height: 1.5; word-wrap: break-word; position: relative; border-radius: 4px; backdrop-filter: blur(5px); }
         .other .message { background: var(--bubble-other); color: var(--text-main); border: 1px solid var(--glass-border); border-left: 3px solid var(--user-color, var(--glass-border)); }
         .self .message { background: var(--bubble-self); color: var(--accent-cyan); border: 1px solid rgba(0, 238, 255, 0.3); border-right: 3px solid var(--accent-cyan); text-shadow: 0 0 5px rgba(0, 238, 255, 0.2); }
         
-        .timestamp { font-family: var(--font-ui); font-size: 9px; letter-spacing: 1px; color: var(--text-muted); margin-top: 6px; padding: 0 4px; opacity: 0.5; transition: opacity 0.2s ease; }
+        .timestamp { font-family: var(--font-ui); font-size: 10px; letter-spacing: 1px; color: var(--text-muted); margin-top: 6px; padding: 0 4px; opacity: 0.5; transition: opacity 0.2s ease; }
         .message-wrapper:hover .timestamp { opacity: 1; color: var(--accent-cyan); }
         
         .media-attachment { max-width: 100%; border-radius: 4px; margin-top: 8px; border: 1px solid var(--glass-border); transition: filter 0.2s ease; filter: contrast(1.1) brightness(0.9); }
         .media-attachment:hover { filter: contrast(1.2) brightness(1.1); }
 
+        /* --- Date Divider --- */
+        .date-divider { display: flex; align-items: center; justify-content: center; margin: 32px 0 16px 0; position: relative; width: 100%; }
+        .date-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(0, 238, 255, 0.3), transparent); z-index: 0; }
+        .date-divider span { background: var(--bg-color); padding: 6px 16px; border: 1px solid var(--glass-border); border-radius: 4px; font-family: var(--font-ui); font-size: 10px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; z-index: 1; box-shadow: 0 0 15px rgba(0, 238, 255, 0.1); }
+
         /* --- Click to Reply Action Button --- */
-        .reply-action-btn { position: absolute; top: 50%; transform: translateY(-50%); opacity: 0; background: rgba(0, 238, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-family: var(--font-ui); font-size: 14px; z-index: 5; box-shadow: inset 0 0 5px rgba(0,238,255,0.2); }
+        .reply-action-btn { position: absolute; top: 50%; transform: translateY(-50%); opacity: 0; background: rgba(0, 238, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-family: var(--font-ui); font-size: 16px; z-index: 5; box-shadow: inset 0 0 5px rgba(0,238,255,0.2); }
         .message-wrapper:hover .reply-action-btn { opacity: 1; }
-        .other .reply-action-btn { right: -40px; }
-        .self .reply-action-btn { left: -40px; }
+        .other .reply-action-btn { right: -45px; }
+        .self .reply-action-btn { left: -45px; }
         .reply-action-btn:hover { background: rgba(0, 238, 255, 0.3); box-shadow: 0 0 12px rgba(0, 238, 255, 0.6); transform: translateY(-50%) scale(1.1); }
 
         /* --- Nested Reply Snippet --- */
-        .reply-snippet { background: rgba(0, 0, 0, 0.5); border-left: 2px solid var(--accent-cyan); padding: 8px 12px; margin-bottom: 10px; border-radius: 4px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: all 0.2s; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .reply-snippet { background: rgba(0, 0, 0, 0.5); border-left: 2px solid var(--accent-cyan); padding: 10px 14px; margin-bottom: 12px; border-radius: 4px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: all 0.2s; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .reply-snippet:hover { background: rgba(0, 238, 255, 0.1); box-shadow: 0 0 10px rgba(0, 238, 255, 0.2); }
-        .snippet-name { font-family: var(--font-ui); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-        .snippet-text { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+        .snippet-name { font-family: var(--font-ui); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .snippet-text { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; }
 
-        /* --- Internal Reply Modal (The Small Window) --- */
-        #reply-modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s ease; }
-        #reply-modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(10, 15, 30, 0.95); border: 1px solid var(--accent-cyan); box-shadow: 0 0 40px rgba(0, 238, 255, 0.15), inset 0 0 20px rgba(0, 238, 255, 0.1); padding: 24px; border-radius: 8px; z-index: 1000; width: 90%; max-width: 450px; display: none; flex-direction: column; gap: 16px; opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        /* --- Internal Reply Modal --- */
+        #reply-modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        #reply-modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(10, 15, 30, 0.95); border: 1px solid var(--accent-cyan); box-shadow: 0 0 40px rgba(0, 238, 255, 0.15), inset 0 0 20px rgba(0, 238, 255, 0.1); padding: 24px; border-radius: 8px; z-index: 1000; width: 90%; max-width: 500px; display: none; flex-direction: column; gap: 16px; opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #reply-modal.active, #reply-modal-overlay.active { display: flex; opacity: 1; }
         #reply-modal.active { transform: translate(-50%, -50%) scale(1); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--glass-border); padding-bottom: 12px; }
         .modal-title { font-family: var(--font-ui); color: var(--accent-cyan); letter-spacing: 2px; font-size: 12px; text-transform: uppercase; }
         .modal-close { background: transparent; border: none; color: var(--accent-magenta); cursor: pointer; font-family: var(--font-ui); font-weight: bold; font-size: 16px; transition: transform 0.2s; }
         .modal-close:hover { transform: scale(1.2); text-shadow: 0 0 10px var(--accent-magenta); }
-        #modal-body-content { font-size: 14px; line-height: 1.6; color: var(--text-main); max-height: 300px; overflow-y: auto; padding-right: 8px;}
+        #modal-body-content { font-size: 15px; line-height: 1.6; color: var(--text-main); max-height: 350px; overflow-y: auto; padding-right: 8px;}
 
         /* --- Typing Indicator --- */
         #typing-indicator { display: none; padding: 0 24px 12px; color: var(--accent-cyan); font-family: var(--font-ui); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; animation: fadeIn 0.3s ease; }
@@ -138,31 +144,31 @@
         .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes typePulse { 0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; } 40% { transform: scale(1.5); opacity: 1; } }
 
-        /* --- Input Area & Reply Preview Base --- */
+        /* --- Input Area --- */
         #input-area { padding: 16px 24px; background: rgba(3, 7, 18, 0.8); border-top: 1px solid var(--glass-border); display: flex; gap: 12px; align-items: flex-end; backdrop-filter: blur(10px); }
-        .attach-btn { width: 40px; height: 40px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); font-family: var(--font-ui); font-size: 18px; transition: all 0.2s; flex-shrink: 0; margin-bottom: 2px;}
+        .attach-btn { width: 44px; height: 44px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); font-family: var(--font-ui); font-size: 20px; transition: all 0.2s; flex-shrink: 0; margin-bottom: 2px;}
         .attach-btn:hover { background: rgba(0, 238, 255, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 238, 255, 0.2); }
 
         #input-wrapper { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden; transition: all 0.3s; }
         #input-wrapper:focus-within { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 238, 255, 0.15); }
         
-        #reply-preview { display: none; padding: 10px 16px; background: rgba(0, 238, 255, 0.05); border-bottom: 1px solid rgba(0, 238, 255, 0.1); align-items: center; justify-content: space-between; animation: slideDown 0.2s ease; }
-        #cancel-reply-btn { background: transparent; border: none; color: var(--accent-magenta); font-family: var(--font-ui); cursor: pointer; font-size: 14px; transition: transform 0.2s; }
+        #reply-preview { display: none; padding: 12px 16px; background: rgba(0, 238, 255, 0.05); border-bottom: 1px solid rgba(0, 238, 255, 0.1); align-items: center; justify-content: space-between; animation: slideDown 0.2s ease; }
+        #cancel-reply-btn { background: transparent; border: none; color: var(--accent-magenta); font-family: var(--font-ui); cursor: pointer; font-size: 16px; transition: transform 0.2s; }
         #cancel-reply-btn:hover { transform: scale(1.2); text-shadow: 0 0 8px var(--accent-magenta); }
 
-        #chat-input { width: 100%; background: transparent; border: none; color: var(--text-main); padding: 12px 16px; font-size: 14px; outline: none; resize: none; min-height: 44px; max-height: 120px; font-family: var(--font-text); line-height: 1.5; }
+        #chat-input { width: 100%; background: transparent; border: none; color: var(--text-main); padding: 14px 18px; font-size: 15px; outline: none; resize: none; min-height: 48px; max-height: 150px; font-family: var(--font-text); line-height: 1.5; }
         
         #file-preview-area { display: flex; gap: 8px; padding: 0; overflow-x: auto;}
         #file-preview-area:not(:empty) { padding: 12px 16px 0; }
         .file-preview-item { width: 48px; height: 48px; border-radius: 4px; overflow: hidden; border: 1px solid var(--accent-cyan); animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .file-preview-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        .send-btn { width: 40px; height: 40px; border-radius: 4px; background: rgba(0, 238, 255, 0.15); border: 1px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); cursor: pointer; flex-shrink: 0; transition: all 0.2s; margin-bottom: 2px; overflow: hidden; box-shadow: inset 0 0 10px rgba(0, 238, 255, 0); }
+        .send-btn { width: 44px; height: 44px; border-radius: 4px; background: rgba(0, 238, 255, 0.15); border: 1px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); cursor: pointer; flex-shrink: 0; transition: all 0.2s; margin-bottom: 2px; overflow: hidden; box-shadow: inset 0 0 10px rgba(0, 238, 255, 0); }
         .send-btn:hover { background: rgba(0, 238, 255, 0.3); box-shadow: inset 0 0 15px rgba(0, 238, 255, 0.4), 0 0 15px rgba(0, 238, 255, 0.3); }
         .send-btn:active { transform: scale(0.92); }
         .send-btn:disabled { background: transparent; border-color: var(--glass-border); color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
         
-        .send-icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; transform: translateY(-1px) translateX(1px); transition: transform 0.3s ease; }
+        .send-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; transform: translateY(-1px) translateX(1px); transition: transform 0.3s ease; }
         .send-btn.animating .send-icon { animation: flySend 0.4s ease forwards; }
 
         @keyframes flySend {
@@ -173,7 +179,7 @@
         }
 
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 0; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
@@ -233,8 +239,8 @@
         <div id="input-wrapper">
             <div id="reply-preview">
                 <div style="display:flex; flex-direction:column; gap:2px;">
-                    <span id="reply-preview-name" style="font-family:var(--font-ui); color:var(--accent-cyan); font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase;"></span>
-                    <span id="reply-preview-text" style="color:var(--text-muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 300px;"></span>
+                    <span id="reply-preview-name" style="font-family:var(--font-ui); color:var(--accent-cyan); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase;"></span>
+                    <span id="reply-preview-text" style="color:var(--text-muted); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 300px;"></span>
                 </div>
                 <button id="cancel-reply-btn">X</button>
             </div>
@@ -258,6 +264,7 @@
     // Stores message data globally by ID so we can render full modals easily
     const messageStore = {};
     let activeReplyTarget = null;
+    let lastMessageDate = null; // Tracks dates for the visual divider
 
     // --- Helper: Generate Unique Colors based on Username ---
     function stringToColor(str) {
@@ -378,7 +385,6 @@
         const msg = messageStore[msgId];
         if(!msg) return;
 
-        // Save a lean payload so we don't broadcast huge base64 images unnecessarily
         activeReplyTarget = {
             id: msgId,
             user: msg.user,
@@ -431,10 +437,26 @@
         const isAtBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
         const isSelf = data.user.name === currentUser.name;
         
-        // Ensure every message has a unique ID for our global dictionary
+        // Setup Date Tracking & Injection
+        const msgDate = data.date || "TODAY";
+        if (msgDate !== lastMessageDate) {
+            const dateDivider = document.createElement('div');
+            dateDivider.className = 'date-divider';
+            dateDivider.innerHTML = `<span>${msgDate}</span>`;
+            
+            // Insert the divider immediately before the typing indicator
+            const typingInd = document.getElementById('typing-indicator');
+            if (typingInd.parentNode === container) {
+                container.insertBefore(dateDivider, typingInd);
+            } else {
+                container.appendChild(dateDivider);
+            }
+            lastMessageDate = msgDate;
+        }
+
+        // Generate ID and User Color
         if (!data.id) data.id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
         messageStore[data.id] = data;
-
         const userColor = stringToColor(data.user.name);
 
         const div = document.createElement('div');
@@ -450,12 +472,9 @@
             `;
         }
 
-        // Handle nested reply snippets
         let replyHtml = '';
         if (data.replyTo) {
-            // Store the fallback payload in case the original message isn't in their current history buffer
             messageStore['reply_' + data.id] = data; 
-            
             const replyColor = stringToColor(data.replyTo.user.name);
             const snippetText = data.replyTo.text || '[ ENCRYPTED ATTACHMENT ]';
             
@@ -476,7 +495,6 @@
             });
         }
 
-        // Hover action button
         const replyBtnHtml = `<div class="reply-action-btn" onclick="initiateReply('${data.id}')">↰</div>`;
 
         div.innerHTML = `
@@ -490,7 +508,9 @@
             ${replyBtnHtml}
         `;
         
-        container.appendChild(div);
+        // Append message before the typing indicator
+        const typingInd = document.getElementById('typing-indicator');
+        container.insertBefore(div, typingInd);
 
         if (!isHistoryLoad && !isSelf) {
             playChime();
@@ -504,7 +524,10 @@
     }
 
     socket.on('chat message', (data) => renderMessage(data, false));
-    socket.on('load history', (history) => history.forEach(msg => renderMessage(msg, true)));
+    socket.on('load history', (history) => {
+        lastMessageDate = null; // reset date tracker on full reload
+        history.forEach(msg => renderMessage(msg, true));
+    });
 
     // --- Typing Logic ---
     let typingTimeout;
@@ -562,12 +585,18 @@
         
         const files = await Promise.all(filePromises);
         
+        // Grab current time AND date
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        const dateStr = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+
         socket.emit('chat message', {
             user: currentUser, 
             text, 
             files, 
-            timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-            replyTo: activeReplyTarget  // Attach the reply payload here
+            timestamp: timeStr,
+            date: dateStr, // Include date in payload
+            replyTo: activeReplyTarget  
         });
         
         // Reset UI
