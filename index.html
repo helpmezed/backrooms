@@ -88,7 +88,12 @@
         .message-wrapper.other { align-self: flex-start; }
         .message-wrapper.self { align-self: flex-end; align-items: flex-end; }
         
-        @keyframes springIn { 0% { opacity: 0; transform: translateY(15px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes springIn { 
+            0% { opacity: 0; filter: brightness(3) blur(5px); transform: translateY(20px) scale(0.95); } 
+            50% { opacity: 0.8; filter: brightness(1.5) blur(0px); transform: translateY(-2px) scale(1.01); } 
+            80% { opacity: 1; transform: translateY(1px); }
+            100% { opacity: 1; filter: brightness(1); transform: translateY(0) scale(1); } 
+        }
         
         .user-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding: 0 4px; }
         .self .user-header { flex-direction: row-reverse; }
@@ -102,6 +107,16 @@
         
         .timestamp { font-family: var(--font-ui); font-size: 10px; letter-spacing: 1px; color: var(--text-muted); margin-top: 6px; padding: 0 4px; opacity: 0.5; transition: opacity 0.2s ease; }
         .message-wrapper:hover .timestamp { opacity: 1; color: var(--accent-cyan); }
+        
+        /* Neon Hover Pulse */
+        .message-wrapper:hover .message {
+            animation: neonBreath 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes neonBreath {
+            0% { box-shadow: 0 0 5px rgba(var(--user-color-rgb), 0.1); }
+            100% { box-shadow: 0 0 25px var(--user-color, var(--accent-cyan)), inset 0 0 10px rgba(0, 238, 255, 0.2); }
+        }
         
         .media-attachment { max-width: 100%; border-radius: 4px; margin-top: 8px; border: 1px solid var(--glass-border); transition: filter 0.2s ease; filter: contrast(1.1) brightness(0.9); }
         .media-attachment:hover { filter: contrast(1.2) brightness(1.1); }
@@ -169,7 +184,7 @@
         .send-btn:disabled { background: transparent; border-color: var(--glass-border); color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
         
         .send-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; transform: translateY(-1px) translateX(1px); transition: transform 0.3s ease; }
-        .send-btn.animating .send-icon { animation: flySend 0.4s forwards; }
+        .send-btn.animating .send-icon { animation: flySend 0.4s ease forwards; }
 
         @keyframes flySend {
             0% { transform: translate(1px, -1px); opacity: 1; }
@@ -444,8 +459,13 @@
             dateDivider.className = 'date-divider';
             dateDivider.innerHTML = `<span>${msgDate}</span>`;
             
-            // FIXED DOM INSERTION BUG
-            container.appendChild(dateDivider);
+            // Insert the divider immediately before the typing indicator
+            const typingInd = document.getElementById('typing-indicator');
+            if (typingInd.parentNode === container) {
+                container.insertBefore(dateDivider, typingInd);
+            } else {
+                container.appendChild(dateDivider);
+            }
             lastMessageDate = msgDate;
         }
 
@@ -503,8 +523,9 @@
             ${replyBtnHtml}
         `;
         
-        // FIXED DOM INSERTION BUG
-        container.appendChild(div);
+        // Append message before the typing indicator
+        const typingInd = document.getElementById('typing-indicator');
+        container.insertBefore(div, typingInd);
 
         if (!isHistoryLoad && !isSelf) {
             playChime();
@@ -588,7 +609,7 @@
         const messageId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 
         socket.emit('chat message', {
-            id: messageId, 
+            id: messageId, // <--- ADD THIS LINE
             user: currentUser, 
             text, 
             files, 
