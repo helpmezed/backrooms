@@ -59,7 +59,6 @@
         .user-list-item:hover { background: rgba(0, 238, 255, 0.05); color: var(--text-main); }
         .user-list-item .user-avatar { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; border: 1px solid var(--glass-border); }
         .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; flex-shrink: 0; }
-        .status-dot.away { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
 
         /* --- Messages --- */
         .message-wrapper { display: flex; flex-direction: column; max-width: 85%; animation: springIn 0.5s forwards; margin-bottom: 10px; position: relative; }
@@ -75,7 +74,7 @@
         .other .message { border-left: 3px solid var(--user-color, var(--accent-cyan)); background: var(--bubble-other); color: var(--text-main); }
         .self .message { border-right: 3px solid var(--accent-cyan); background: var(--bubble-self); color: var(--accent-cyan); }
 
-        /* FIXED: Tactical Alert with proper specificity */
+        /* Tactical Alert */
         .message-wrapper .message.tactical-alert { 
             background: rgba(255, 0, 234, 0.15) !important; 
             border: 1px solid var(--accent-magenta) !important; 
@@ -86,69 +85,35 @@
         }
         @keyframes alertPulse { from { box-shadow: 0 0 5px rgba(255, 0, 234, 0.3); } to { box-shadow: 0 0 25px rgba(255, 0, 234, 0.6); } }
 
-        .message-time { font-family: var(--font-ui); font-size: 9px; color: var(--text-muted); margin-top: 6px; opacity: 0.6; }
-        .message-wrapper:hover .message-time { opacity: 1; color: var(--accent-cyan); }
-
-        .media-attachment { max-width: 100%; border-radius: 4px; margin-top: 10px; display: block; border: 1px solid var(--glass-border); cursor: pointer; transition: all 0.2s; }
-        .media-attachment:hover { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 238, 255, 0.2); }
-        video.media-attachment { background: #000; cursor: default; }
-
-        /* --- Media Overlay --- */
-        #media-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px); display: none; align-items: center; justify-content: center; z-index: 2002; cursor: zoom-out; flex-direction: column; }
-        #media-overlay img, #media-overlay video { max-width: 90%; max-height: 85vh; border: 1px solid var(--accent-cyan); box-shadow: 0 0 40px rgba(0, 238, 255, 0.3); }
-        #media-overlay .close-hint { position: absolute; bottom: 30px; font-family: var(--font-ui); font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+        .media-attachment { max-width: 100%; border-radius: 4px; margin-top: 10px; display: block; border: 1px solid var(--glass-border); cursor: pointer; }
 
         /* --- Input Area --- */
         #input-area { padding: 16px 24px; background: rgba(3, 7, 18, 0.8); border-top: 1px solid var(--glass-border); display: flex; gap: 12px; align-items: flex-end; }
         #input-wrapper { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden; }
         #chat-input { width: 100%; background: transparent; border: none; color: #fff; padding: 14px 18px; outline: none; resize: none; min-height: 48px; font-family: var(--font-text); font-size: 15px; }
-        #chat-input::placeholder { color: var(--text-muted); }
 
-        .btn { font-family: var(--font-ui); background: rgba(0, 238, 255, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 8px 16px; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; transition: all 0.2s; }
-        .btn:hover { background: rgba(0, 238, 255, 0.2); box-shadow: 0 0 15px rgba(0, 238, 255, 0.3); }
-        .btn:active { transform: scale(0.95); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn { font-family: var(--font-ui); background: rgba(0, 238, 255, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 8px 16px; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
 
-        /* --- File Preview --- */
         #file-preview-area { display: flex; gap: 8px; padding: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--glass-border); }
         .file-preview-item { display: flex; align-items: center; gap: 6px; background: rgba(0, 238, 255, 0.05); border: 1px solid var(--glass-border); padding: 4px 8px; border-radius: 4px; font-size: 11px; color: var(--text-muted); }
-        .file-preview-item img { width: 24px; height: 24px; object-fit: cover; border-radius: 2px; }
-        .file-preview-item .remove-btn { color: var(--accent-magenta); cursor: pointer; font-weight: bold; padding: 0 4px; }
-        .file-preview-item .remove-btn:hover { color: var(--text-main); }
 
-        /* --- Typing Indicator --- */
         #typing-indicator { display: none; padding: 8px 24px; font-family: var(--font-ui); font-size: 10px; color: var(--accent-cyan); letter-spacing: 2px; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); }
-        #typing-indicator.active { display: block; animation: pulse 1.5s infinite; }
+        #typing-indicator.active { display: block; }
 
-        /* --- Login Screen --- */
         #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2000; background: var(--bg-color); backdrop-filter: blur(10px); }
-        .login-card { text-align: center; background: var(--glass-bg); padding: 40px; border-radius: 8px; border: 1px solid var(--glass-border); max-width: 360px; width: 90%; box-shadow: 0 0 40px rgba(0, 238, 255, 0.1); }
-        .login-card h2 { font-family: var(--font-ui); margin-bottom: 24px; color: var(--accent-cyan); letter-spacing: 2px; }
-        .login-input { padding: 14px; margin-bottom: 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; width: 100%; font-family: var(--font-text); font-size: 15px; outline: none; transition: all 0.3s; }
-        .login-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 238, 255, 0.2); }
-        .login-error { color: var(--accent-magenta); font-family: var(--font-ui); font-size: 10px; margin-top: -15px; margin-bottom: 15px; display: none; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* --- Scrollbar --- */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+        .login-card { text-align: center; background: var(--glass-bg); padding: 40px; border-radius: 8px; border: 1px solid var(--glass-border); max-width: 360px; width: 90%; }
+        .login-input { padding: 14px; margin-bottom: 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; width: 100%; }
     </style>
 </head>
 <body>
 
 <div id="notification-container"></div>
 
-<div id="media-overlay" onclick="closeMediaOverlay()">
-    <div id="media-content"></div>
-    <div class="close-hint">Click anywhere to close // ESC</div>
-</div>
-
 <div id="login-screen">
     <div class="login-card">
-        <h2>Initialize Link</h2>
-        <div class="login-error" id="login-error">Invalid callsign</div>
-        <input type="text" id="username-input" class="login-input" placeholder="Enter Callsign (2-20 chars)" maxlength="20" autocomplete="off">
+        <h2 style="font-family:var(--font-ui); color:var(--accent-cyan); margin-bottom:24px;">Initialize Link</h2>
+        <div id="login-error" style="color:var(--accent-magenta); display:none; margin-bottom:10px;">Invalid callsign</div>
+        <input type="text" id="username-input" class="login-input" placeholder="Enter Callsign" maxlength="20">
         <button class="btn" id="join-btn" style="width:100%">Engage</button>
     </div>
 </div>
@@ -156,11 +121,8 @@
 <div id="app-container">
     <div id="chat-main">
         <header id="app-header" style="padding:16px 24px; border-bottom:1px solid var(--glass-border); font-family:var(--font-ui); color:var(--accent-cyan); display:flex; align-items:center; justify-content:space-between;">
-            <div style="display:flex; align-items:center;">
-                <span class="conn-status" id="conn-dot"></span>
-                BACKROOM TERMINAL
-            </div>
-            <div style="font-size:11px; color:var(--text-muted);" id="connection-text">OFFLINE</div>
+            <div><span class="conn-status" id="conn-dot"></span> BACKROOM TERMINAL</div>
+            <div id="connection-text" style="font-size:11px;">OFFLINE</div>
         </header>
         
         <div id="chat-container"></div>
@@ -170,152 +132,80 @@
         </div>
         
         <div id="input-area">
-            <label for="file-input" class="btn" style="padding:12px; display:flex; align-items:center; justify-content:center;" title="Attach files">+</label>
+            <label for="file-input" class="btn" style="padding:12px">+</label>
             <input type="file" id="file-input" multiple accept="image/*,video/*" style="display:none">
-            
             <div id="input-wrapper">
                 <div id="file-preview-area" style="display:none;"></div>
                 <textarea id="chat-input" placeholder="Input sequence... (/alert for tactical)" rows="1"></textarea>
             </div>
-            
-            <button class="btn" id="send-btn" style="height:48px; padding:0 20px;" title="Send (Enter)">Transmit</button>
+            <button class="btn" id="send-btn" style="height:48px;">Transmit</button>
         </div>
     </div>
     
     <aside id="sidebar">
-        <div class="sidebar-title">
-            <span>Entities Online</span>
-            <span id="online-count" style="font-size:10px; color:var(--text-muted);">0</span>
-        </div>
+        <div class="sidebar-title">Entities Online <span id="online-count">0</span></div>
         <div id="user-list"></div>
     </aside>
 </div>
 
 <script>
     const socket = io();
-    let currentUser = { 
-        name: 'User', 
-        avatarUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300eeff"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4 0-7 2-7 6v1h14v-1c0-4-3-6-7-6z"/></svg>',
-        id: null
-    };
+    let currentUser = { name: 'User', id: null };
     let selectedFiles = [];
     let isConnected = false;
     let typingTimeout = null;
     const messageStore = {};
-    const userList = new Map();
 
-    // Notification system
     function showNotification(text, type = 'info') {
         const container = document.getElementById('notification-container');
         const n = document.createElement('div');
         n.className = `system-notification ${type === 'error' ? 'error' : ''}`;
-        n.innerHTML = (type === 'error' ? '◉ ' : '◇ ') + text;
+        n.innerHTML = text;
         container.appendChild(n);
-        setTimeout(() => {
-            if (n.parentNode) n.remove();
-        }, 3000);
-    }
-
-    // Connection handling
-    function updateConnectionStatus(connected) {
-        isConnected = connected;
-        const dot = document.getElementById('conn-dot');
-        const text = document.getElementById('connection-text');
-        if (connected) {
-            dot.classList.add('online');
-            text.innerText = 'ONLINE';
-            text.style.color = 'var(--accent-cyan)';
-            showNotification('Neural link established');
-        } else {
-            dot.classList.remove('online');
-            text.innerText = 'OFFLINE';
-            text.style.color = 'var(--accent-magenta)';
-            showNotification('Link severed', 'error');
-        }
+        setTimeout(() => { if (n.parentNode) n.remove(); }, 3000);
     }
 
     socket.on('connect', () => {
-        updateConnectionStatus(true);
+        isConnected = true;
         currentUser.id = socket.id;
-        if (currentUser.name !== 'User') {
-            socket.emit('user joined', currentUser);
-        }
+        document.getElementById('conn-dot').classList.add('online');
+        document.getElementById('connection-text').innerText = 'ONLINE';
+        if (currentUser.name !== 'User') socket.emit('user joined', currentUser);
     });
 
-    socket.on('disconnect', () => updateConnectionStatus(false));
-    socket.on('connect_error', (err) => showNotification('Connection error: ' + err.message, 'error'));
+    socket.on('disconnect', () => {
+        isConnected = false;
+        document.getElementById('conn-dot').classList.remove('online');
+        document.getElementById('connection-text').innerText = 'OFFLINE';
+    });
 
-    // Session management
     window.addEventListener('DOMContentLoaded', () => {
         const saved = localStorage.getItem('futureChatUser');
         if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                if (parsed.name && parsed.name.trim().length >= 2) {
-                    currentUser = { ...currentUser, ...parsed };
-                    enterChat();
-                }
-            } catch (e) {
-                localStorage.removeItem('futureChatUser');
-            }
+            currentUser = { ...currentUser, ...JSON.parse(saved) };
+            enterChat();
         }
     });
 
     function enterChat() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-container').style.display = 'flex';
-        document.getElementById('chat-input').focus();
     }
 
-    // FIXED: Proper image compression that preserves video types
     async function processFile(file) {
-        // Videos and non-images: return original with metadata
-        if (!file.type.startsWith('image/') || file.type === 'image/gif') {
-            return file;
-        }
-        
-        // Images: compress
-        return new Promise((resolve, reject) => {
+        if (!file.type.startsWith('image/') || file.type === 'image/gif') return file;
+        return new Promise((resolve) => {
             const img = new Image();
-            const url = URL.createObjectURL(file);
-            
+            img.src = URL.createObjectURL(file);
             img.onload = () => {
-                URL.revokeObjectURL(url);
                 const canvas = document.createElement('canvas');
                 const MAX_WIDTH = 1280;
-                let width = img.width;
-                let height = img.height;
-                
-                if (width > MAX_WIDTH) {
-                    height = Math.round(height * MAX_WIDTH / width);
-                    width = MAX_WIDTH;
-                }
-                
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                canvas.toBlob((blob) => {
-                    if (!blob) {
-                        reject(new Error('Compression failed'));
-                        return;
-                    }
-                    // Create new file-like object with proper metadata
-                    const compressedFile = new File([blob], file.name, {
-                        type: 'image/jpeg',
-                        lastModified: Date.now()
-                    });
-                    resolve(compressedFile);
-                }, 'image/jpeg', 0.8);
+                let width = img.width, height = img.height;
+                if (width > MAX_WIDTH) { height = Math.round(height * MAX_WIDTH / width); width = MAX_WIDTH; }
+                canvas.width = width; canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => resolve(new File([blob], file.name, {type: 'image/jpeg'})), 'image/jpeg', 0.8);
             };
-            
-            img.onerror = () => {
-                URL.revokeObjectURL(url);
-                reject(new Error('Image load failed'));
-            };
-            
-            img.src = url;
         });
     }
 
@@ -325,329 +215,99 @@
         return `hsl(${Math.abs(hash) % 360}, 100%, 65%)`;
     }
 
-    // File preview system
-    function updateFilePreviews() {
-        const area = document.getElementById('file-preview-area');
-        if (selectedFiles.length === 0) {
-            area.style.display = 'none';
-            area.innerHTML = '';
-            return;
-        }
-        
-        area.style.display = 'flex';
-        area.innerHTML = selectedFiles.map((file, idx) => {
-            const isImage = file.type.startsWith('image/');
-            const thumb = isImage ? URL.createObjectURL(file) : null;
-            
-            return `
-                <div class="file-preview-item">
-                    ${thumb ? `<img src="${thumb}" alt="">` : `<span style="font-size:16px;">${file.type.startsWith('video/') ? '▶' : '📄'}</span>`}
-                    <span style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${file.name}</span>
-                    <span class="remove-btn" onclick="removeFile(${idx})" title="Remove">×</span>
-                </div>
-            `;
-        }).join('');
-    }
-
-    window.removeFile = (idx) => {
-        selectedFiles.splice(idx, 1);
-        updateFilePreviews();
-        if (selectedFiles.length === 0) {
-            document.getElementById('file-input').value = '';
-        }
-    };
-
-    document.getElementById('file-input').addEventListener('change', (e) => {
-        const files = Array.from(e.target.files);
-        // Limit to 5 files, 10MB each
-        const validFiles = files.filter(f => {
-            if (f.size > 10 * 1024 * 1024) {
-                showNotification(`File too large: ${f.name}`, 'error');
-                return false;
-            }
-            return true;
-        }).slice(0, 5);
-        
-        if (files.length > 5) {
-            showNotification('Limited to 5 files', 'error');
-        }
-        
-        selectedFiles = validFiles;
-        updateFilePreviews();
-    });
-
-    // Media overlay
-    window.viewMedia = (src, type = 'image') => {
-        const overlay = document.getElementById('media-overlay');
-        const content = document.getElementById('media-content');
-        content.innerHTML = type === 'video' 
-            ? `<video src="${src}" controls autoplay style="max-width:90%; max-height:85vh;"></video>`
-            : `<img src="${src}" style="max-width:90%; max-height:85vh;">`;
-        overlay.style.display = 'flex';
-    };
-
-    window.closeMediaOverlay = () => {
-        document.getElementById('media-overlay').style.display = 'none';
-        document.getElementById('media-content').innerHTML = '';
-    };
-
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeMediaOverlay();
-    });
-
-    // Message rendering with socket ID detection
-    function renderMessage(data, isHistory = false) {
+    function renderMessage(data) {
         const container = document.getElementById('chat-container');
-        
-        // FIXED: Use socket ID for reliable self-detection
-        const isSelf = data.user.id === socket.id || 
-                      (data.user.name === currentUser.name && !data.user.id);
+        const isSelf = data.user.id === socket.id;
         const userColor = stringToColor(data.user.name);
         
-        if (!data.id) data.id = Math.random().toString(36).substr(2, 9);
-        messageStore[data.id] = data;
-
         const div = document.createElement('div');
         div.className = `message-wrapper ${isSelf ? 'self' : 'other'}`;
-        div.id = `msg-${data.id}`;
         div.style.setProperty('--user-color', userColor);
 
-        // FIXED: Proper tactical alert styling
-        const alertClass = data.isAlert ? 'tactical-alert' : '';
-        const alertPrefix = data.isAlert ? '⚠ TACTICAL ALERT: ' : '';
-
-        // Media handling
         let mediaHtml = '';
-        if (data.files && data.files.length > 0) {
-            mediaHtml = data.files.map(f => {
-                if (f.type?.startsWith('video/')) {
-                    return `<video src="${f.data}" controls class="media-attachment"></video>`;
-                }
-                return `<img src="${f.data}" class="media-attachment" onclick="window.viewMedia('${f.data}', 'image')" alt="attachment">`;
-            }).join('');
+        if (data.files) {
+            data.files.forEach(f => {
+                if (f.type?.startsWith('video/')) mediaHtml += `<video src="${f.data}" controls class="media-attachment"></video>`;
+                else mediaHtml += `<img src="${f.data}" class="media-attachment" onclick="window.open('${f.data}')">`;
+            });
         }
 
         div.innerHTML = `
             <div class="user-header">
                 <span class="username" style="color:${userColor}">${data.user.name}</span>
-                <span style="color:var(--text-muted); font-size:9px;">${data.timestamp || ''}</span>
             </div>
-            <div class="message ${alertClass}">
-                ${alertPrefix}${data.text || ''}
+            <div class="message ${data.isAlert ? 'tactical-alert' : ''}">
+                ${data.text || ''}
                 ${mediaHtml}
             </div>
         `;
-        
         container.appendChild(div);
-        
-        // Auto-scroll logic
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
-        if (isNearBottom || isSelf) {
-            container.scrollTop = container.scrollHeight;
-        }
+        container.scrollTop = container.scrollHeight;
     }
 
-    // Send handler with FIXED compression
     async function handleSend() {
         const input = document.getElementById('chat-input');
         let text = input.value.trim();
         let isAlert = false;
 
-        // Command parsing
-        if (text.startsWith('/')) {
-            const [cmd, ...args] = text.slice(1).split(' ');
-            switch(cmd.toLowerCase()) {
-                case 'alert':
-                    text = args.join(' ');
-                    isAlert = true;
-                    break;
-                case 'clear':
-                    document.getElementById('chat-container').innerHTML = '';
-                    input.value = '';
-                    showNotification('Buffer cleared');
-                    return;
-                case 'help':
-                    showNotification('Commands: /alert [msg], /clear, /help');
-                    input.value = '';
-                    return;
-                default:
-                    showNotification('Unknown command: ' + cmd, 'error');
-                    return;
-            }
-        }
-
+        if (text.startsWith('/alert ')) { text = text.replace('/alert ', ''); isAlert = true; }
         if (!text && selectedFiles.length === 0) return;
-        if (!isConnected) {
-            showNotification('No active link', 'error');
-            return;
-        }
 
-        const sendBtn = document.getElementById('send-btn');
-        sendBtn.disabled = true;
+        const processedFiles = await Promise.all(selectedFiles.map(async f => {
+            const processed = await processFile(f);
+            return new Promise(res => {
+                const r = new FileReader();
+                r.onload = e => res({type: processed.type, data: e.target.result});
+                r.readAsDataURL(processed);
+            });
+        }));
 
-        try {
-            // FIXED: Process files with proper error handling
-            const processedFiles = await Promise.all(selectedFiles.map(async (file) => {
-                try {
-                    const processed = await processFile(file);
-                    return new Promise((res, rej) => {
-                        const r = new FileReader();
-                        r.onerror = rej;
-                        r.onload = e => res({
-                            type: processed.type,
-                            name: processed.name,
-                            data: e.target.result
-                        });
-                        r.readAsDataURL(processed);
-                    });
-                } catch (err) {
-                    showNotification(`Failed to process ${file.name}`, 'error');
-                    return null;
-                }
-            }));
+        const msgData = { 
+            id: Math.random().toString(36).substr(2, 9),
+            user: currentUser, 
+            text, 
+            files: processedFiles, 
+            isAlert, 
+            timestamp: new Date().toLocaleTimeString() 
+        };
 
-            const validFiles = processedFiles.filter(f => f !== null);
-
-            const msgData = {
-                id: Math.random().toString(36).substr(2, 9),
-                user: currentUser,
-                text,
-                files: validFiles,
-                timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-                isAlert
-            };
-
-            // Optimistic render
-            renderMessage(msgData);
-            socket.emit('chat message', msgData);
-
-            input.value = '';
-            selectedFiles = [];
-            updateFilePreviews();
-            document.getElementById('file-input').value = '';
-        } catch (err) {
-            showNotification('Transmission failed', 'error');
-            console.error(err);
-        } finally {
-            sendBtn.disabled = false;
-        }
+        renderMessage(msgData);
+        socket.emit('chat message', msgData);
+        input.value = ''; selectedFiles = [];
+        document.getElementById('file-preview-area').style.display = 'none';
     }
 
-    // Event listeners
-    document.getElementById('send-btn').addEventListener('click', handleSend);
-    
-    document.getElementById('chat-input').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
+    document.getElementById('join-btn').onclick = () => {
+        const val = document.getElementById('username-input').value.trim();
+        if (val) {
+            currentUser.name = val;
+            currentUser.id = socket.id;
+            localStorage.setItem('futureChatUser', JSON.stringify(currentUser));
+            enterChat();
+            socket.emit('user joined', currentUser);
         }
-    });
+    };
 
-    // Typing indicator
-    document.getElementById('chat-input').addEventListener('input', () => {
-        if (!isConnected) return;
-        socket.emit('typing', { isTyping: true, user: currentUser });
-        clearTimeout(typingTimeout);
-        typingTimeout = setTimeout(() => {
-            socket.emit('typing', { isTyping: false, user: currentUser });
-        }, 2000);
-    });
+    document.getElementById('send-btn').onclick = handleSend;
+    document.getElementById('chat-input').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
 
-    // Login with validation
-    document.getElementById('join-btn').addEventListener('click', () => {
-        const input = document.getElementById('username-input');
-        const val = input.value.trim();
-        const errorDiv = document.getElementById('login-error');
-        
-        if (!val || val.length < 2) {
-            errorDiv.innerText = 'Callsign must be 2-20 characters';
-            errorDiv.style.display = 'block';
-            input.style.borderColor = 'var(--accent-magenta)';
-            return;
-        }
-        
-        if (!/^[a-zA-Z0-9_-]+$/.test(val)) {
-            errorDiv.innerText = 'Alphanumeric, dash, underscore only';
-            errorDiv.style.display = 'block';
-            input.style.borderColor = 'var(--accent-magenta)';
-            return;
-        }
-        
-        errorDiv.style.display = 'none';
-        input.style.borderColor = '';
-        currentUser.name = val;
-        currentUser.id = socket.id;
-        localStorage.setItem('futureChatUser', JSON.stringify(currentUser));
-        enterChat();
-    });
+    document.getElementById('file-input').onchange = (e) => {
+        selectedFiles = Array.from(e.target.files);
+        const area = document.getElementById('file-preview-area');
+        area.style.display = 'flex';
+        area.innerHTML = selectedFiles.map(f => `<div class="file-preview-item">${f.name}</div>`).join('');
+    };
 
-    document.getElementById('username-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') document.getElementById('join-btn').click();
-    });
-
-    document.getElementById('username-input').addEventListener('input', () => {
-        document.getElementById('login-error').style.display = 'none';
-        document.getElementById('username-input').style.borderColor = '';
-    });
-
-    // Socket events
-    socket.on('chat message', (data) => {
-        if (data.user.id !== socket.id) {
-            renderMessage(data);
-        }
-    });
-
-    socket.on('load history', (history) => {
-        history.forEach(m => renderMessage(m, true));
-    });
-
-    // FIXED: Proper user list management
+    socket.on('chat message', (data) => { if(data.user.id !== socket.id) renderMessage(data); });
+    socket.on('load history', (h) => h.forEach(renderMessage));
     socket.on('user list', (users) => {
-        const list = document.getElementById('user-list');
-        const count = document.getElementById('online-count');
-        
-        list.innerHTML = users.map(u => {
-            const color = stringToColor(u.name);
-            return `
-                <div class="user-list-item" style="--user-color: ${color}">
-                    <img src="${u.avatarUrl || currentUser.avatarUrl}" class="user-avatar" style="border-color: ${color}" onerror="this.style.display='none'">
-                    <div class="status-dot"></div>
-                    <span style="color: ${color}; font-weight: 600;">${u.name}</span>
-                    ${u.id === socket.id ? '<span style="font-size:9px; color:var(--text-muted); margin-left:auto;">(YOU)</span>' : ''}
-                </div>
-            `;
-        }).join('');
-        
-        count.innerText = users.length;
-    });
-
-    socket.on('user joined', (user) => {
-        if (user.id !== socket.id) {
-            showNotification(`${user.name} entered the backroom`);
-        }
-    });
-
-    socket.on('user left', (user) => {
-        showNotification(`${user.name} departed`, 'error');
-    });
-
-    socket.on('typing', (data) => {
-        const indicator = document.getElementById('typing-indicator');
-        const text = document.getElementById('typing-text');
-        if (data.isTyping && data.user.id !== socket.id) {
-            text.innerText = `${data.user.name} is transmitting...`;
-            indicator.classList.add('active');
-        } else {
-            indicator.classList.remove('active');
-        }
-    });
-
-    // Cleanup
-    window.addEventListener('beforeunload', () => {
-        if (isConnected) {
-            socket.emit('typing', { isTyping: false, user: currentUser });
-        }
+        document.getElementById('online-count').innerText = users.length;
+        document.getElementById('user-list').innerHTML = users.map(u => `
+            <div class="user-list-item">
+                <div class="status-dot"></div>
+                <span style="color:${stringToColor(u.name)}">${u.name}</span>
+            </div>
+        `).join('');
     });
 </script>
 </body>
