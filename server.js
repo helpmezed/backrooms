@@ -1,51 +1,79 @@
 const express = require('express');
-const app = express();
-const http = require('http').Server(app);
+const http = require('http');
+const { Server } = require('socket.io');
 const path = require('path');
 
-const io = require('socket.io')(http, {
-    maxHttpBufferSize: 1e7 
+const app = express();
+const server = http.createServer(app);
+
+// FIXED: Increased buffer size to 100MB for video transmissions
+const io = new Server(server, {
+    maxHttpBufferSize: 1e8 
 });
 
-let messageHistory = []; 
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+// THE ENTITY MAP: Stores active users indexed by their Socket ID
+const activeUsers = new Map();
+const messageHistory = []; // Optional: Stores last 50 messages for new joins
 
 io.on('connection', (socket) => {
-    io.emit('user count', io.engine.clientsCount);
-    console.log(`User connected. Total: ${io.engine.clientsCount}`);
-    
+    console.log(`◇ New connection established: ${socket.id}`);
+
+    // 1. Initial connection: Send history to the new unit
     socket.emit('load history', messageHistory);
 
-    socket.on('chat message', (data) => {
-        if (data.text) {
-            data.text = data.text.replace(/<[^>]*>?/gm, ''); 
-        }
-
-        messageHistory.push(data);
-        if (messageHistory.length > 5) messageHistory.shift();
+    // 2. User Joined: Add to Map and broadcast the updated list
+    socket.on('user joined', (userData) => {
+        // Ensure the ID is pinned to the socket for reliability
+        const user = { ...userData, id: socket.id };
+        activeUsers.set(socket.id, user);
         
-        io.emit('chat message', data); 
+        console.log(`◉ Entity Authenticated: ${user.name}`);
+        
+        // Broadcast to everyone: Updated entity list
+        io.emit('user list', Array.from(activeUsers.values()));
+        
+        // Notify others
+        socket.broadcast.emit('user joined', user);
     });
 
-    // --- TYPING INDICATOR LOGIC ADDED HERE ---
-    socket.on('typing', (name) => {
-        socket.broadcast.emit('typing', name); // Sends to everyone EXCEPT the person typing
+    // 3. Messaging: Relay with history logging
+    socket.on('chat message', (msgData) => {
+        // Log to history (keep only last 50)
+        messageHistory.push(msgData);
+        if (messageHistory.length > 50) messageHistory.shift();
+
+        // Broadcast to everyone except the sender (who did an optimistic render)
+        socket.broadcast.emit('chat message', msgData);
     });
 
-    socket.on('stop typing', () => {
-        socket.broadcast.emit('stop typing');
+    // 4. Typing Status
+    socket.on('typing', (data) => {
+        socket.broadcast.emit('typing', data);
     });
 
+    // 5. Disconnect: Clean up the map
     socket.on('disconnect', () => {
-        io.emit('user count', io.engine.clientsCount);
-        console.log(`User disconnected. Total: ${io.engine.clientsCount}`);
+        const user = activeUsers.get(socket.id);
+        if (user) {
+            console.log(`◌ Signal Lost: ${user.name}`);
+            activeUsers.delete(socket.id);
+            
+            // Broadcast the updated list and departure notification
+            io.emit('user list', Array.from(activeUsers.values()));
+            io.emit('user left', user);
+        }
     });
 });
 
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, () => {
-    console.log(`Server active on port ${PORT}`);
+server.listen(PORT, () => {
+    console.log(`
+    ====================================
+    BACKROOM TERMINAL ONLINE
+    Access Point: http://localhost:${PORT}
+    Data Limit: 100MB
+    ====================================
+    `);
 });
