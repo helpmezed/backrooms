@@ -40,127 +40,111 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- Notifications --- */
         #notification-container { position: fixed; top: 20px; right: 50%; transform: translateX(50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .system-notification { background: rgba(3, 7, 18, 0.9); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 12px 20px; border-radius: 4px; font-family: var(--font-ui); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; box-shadow: 0 0 15px rgba(0, 238, 255, 0.2); }
-        .system-notification.fade-out { animation: fadeOutUp 0.4s ease forwards; }
+        .system-notification { background: rgba(3, 7, 18, 0.9); backdrop-filter: blur(10px); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 12px 20px; border-radius: 4px; font-family: var(--font-ui); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; animation: slideDown 0.4s forwards; box-shadow: 0 0 15px rgba(0, 238, 255, 0.2); }
         .system-notification.error { border-color: var(--accent-magenta); color: var(--accent-magenta); box-shadow: 0 0 15px rgba(255, 0, 234, 0.2); }
         @keyframes slideDown { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOutUp { 100% { transform: translateY(-20px); opacity: 0; } }
 
-        /* --- Login Screen --- */
-        #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 100; background: rgba(3, 7, 18, 0.8); backdrop-filter: blur(10px); transition: opacity 0.4s ease; }
-        .login-card { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 40px; border-radius: 8px; width: 100%; max-width: 360px; text-align: center; display: flex; flex-direction: column; gap: 24px; box-shadow: 0 0 40px rgba(0, 238, 255, 0.1); position: relative; overflow: hidden; }
-        .login-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent); }
-        .login-title { font-family: var(--font-ui); font-size: 24px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 238, 255, 0.5); }
-        .avatar-upload-wrapper { position: relative; width: 88px; height: 88px; margin: 0 auto; background: rgba(0, 238, 255, 0.05); border: 1px dashed var(--accent-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; color: var(--accent-cyan); font-family: var(--font-ui); font-size: 10px; font-weight: 500; text-transform: uppercase; transition: all 0.3s ease; box-shadow: inset 0 0 15px rgba(0, 238, 255, 0.1); }
-        .avatar-upload-wrapper:hover { transform: scale(1.08); background: rgba(0, 238, 255, 0.1); }
+        #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 100; background: rgba(3, 7, 18, 0.8); backdrop-filter: blur(10px); }
+        .login-card { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 40px; border-radius: 8px; width: 100%; max-width: 360px; text-align: center; display: flex; flex-direction: column; gap: 24px; box-shadow: 0 0 40px rgba(0, 238, 255, 0.1); }
+        .login-title { font-family: var(--font-ui); font-size: 24px; color: var(--text-main); text-transform: uppercase; letter-spacing: 2px; }
+        .avatar-upload-wrapper { position: relative; width: 88px; height: 88px; margin: 0 auto; background: rgba(0, 238, 255, 0.05); border: 1px dashed var(--accent-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; color: var(--accent-cyan); font-family: var(--font-ui); font-size: 10px; transition: all 0.3s; }
+        .avatar-upload-wrapper:hover { background: rgba(0, 238, 255, 0.1); transform: scale(1.05); }
         .avatar-upload-wrapper.has-image { border-style: solid; }
         #avatar-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
-        #avatar-input { display: none; }
-        .login-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--text-main); padding: 16px; font-size: 15px; border-radius: 4px; outline: none; transition: all 0.3s ease; font-family: var(--font-text); }
+        .login-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: var(--text-main); padding: 16px; border-radius: 4px; outline: none; transition: all 0.3s; }
         .login-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 238, 255, 0.2); }
+        .login-error { color: var(--accent-magenta); font-family: var(--font-ui); font-size: 11px; margin-top: -10px; display: none; }
 
-        /* --- App Container --- */
-        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; max-width: 1200px; margin: 0 auto; position: relative; background: transparent; }
+        #app-container { display: none; flex-direction: column; height: 100vh; width: 100%; max-width: 1200px; margin: 0 auto; background: transparent; }
         @media (min-width: 768px) {
-            #app-container { height: 95vh; margin-top: 2.5vh; border-radius: 8px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 238, 255, 0.05); overflow: hidden;}
+            #app-container { height: 95vh; margin-top: 2.5vh; border-radius: 8px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); overflow: hidden;}
         }
 
-        /* --- App Header --- */
-        #app-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--glass-border); background: rgba(3, 7, 18, 0.6); z-index: 10; backdrop-filter: blur(10px); }
-        .header-title { font-family: var(--font-ui); font-size: 18px; font-weight: 700; letter-spacing: 2px; color: var(--accent-cyan); text-transform: uppercase; text-shadow: 0 0 8px rgba(0, 238, 255, 0.4); display: flex; align-items: center; gap: 8px;}
+        #app-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--glass-border); }
+        .header-title { font-family: var(--font-ui); color: var(--accent-cyan); letter-spacing: 2px; display: flex; align-items: center; gap: 8px; }
+        .connection-status { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-magenta); box-shadow: 0 0 8px var(--accent-magenta); transition: all 0.3s; }
+        .connection-status.connected { background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .header-controls { display: flex; align-items: center; gap: 12px; }
 
-        .pulse-dot { width: 6px; height: 6px; background: var(--accent-cyan); border-radius: 50%; box-shadow: 0 0 10px var(--accent-cyan); animation: pulse 2s infinite; }
-        .pulse-dot.offline { background: var(--accent-magenta); box-shadow: 0 0 10px var(--accent-magenta); animation: none; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        #user-count-badge { font-family: var(--font-ui); font-size: 11px; letter-spacing: 1px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; font-weight: 500; text-transform: uppercase;}
-
-        .btn { font-family: var(--font-ui); background: rgba(0, 238, 255, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; transition: all 0.2s ease; box-shadow: 0 0 10px rgba(0, 238, 255, 0); }
-        .btn:hover { background: rgba(0, 238, 255, 0.2); box-shadow: 0 0 15px rgba(0, 238, 255, 0.3); }
-        .btn:active { transform: scale(0.96); }
-        .btn-secondary { background: transparent; border-color: var(--text-muted); color: var(--text-muted); }
-        .btn-secondary:hover { border-color: var(--text-main); color: var(--text-main); box-shadow: none; background: rgba(255,255,255,0.05); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* --- Chat Messages --- */
         #chat-container { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; position: relative; }
         
-        .message-wrapper { display: flex; flex-direction: column; max-width: 85%; animation: springIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transition: transform 0.2s ease; transform-origin: bottom left; position: relative; }
-        .message-wrapper.self { transform-origin: bottom right; }
+        .message-wrapper { display: flex; flex-direction: column; max-width: 85%; animation: springIn 0.5s forwards; position: relative; }
         .message-wrapper.other { align-self: flex-start; }
         .message-wrapper.self { align-self: flex-end; align-items: flex-end; }
         
-        @keyframes springIn { 
-            0% { opacity: 0; filter: brightness(3) blur(5px); transform: translateY(20px) scale(0.95); } 
-            50% { opacity: 0.8; filter: brightness(1.5) blur(0px); transform: translateY(-2px) scale(1.01); } 
-            100% { opacity: 1; filter: brightness(1); transform: translateY(0) scale(1); } 
-        }
+        @keyframes springIn { 0% { opacity: 0; filter: brightness(3) blur(5px); transform: translateY(20px) scale(0.95); } 100% { opacity: 1; filter: brightness(1); transform: translateY(0) scale(1); } }
         
-        .user-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding: 0 4px; }
-        .self .user-header { flex-direction: row-reverse; }
-        .chat-avatar { width: 26px; height: 26px; border-radius: 4px; object-fit: cover; background: #000; border: 1px solid var(--user-color, var(--glass-border)); transition: all 0.3s ease; filter: sepia(0.2) hue-rotate(180deg) saturate(2); }
-        .username { font-family: var(--font-ui); font-size: 11px; color: var(--user-color, var(--text-muted)); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 8px rgba(var(--user-color-rgb, 0, 238, 255), 0.3); }
+        .user-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .self .user-header { display: none; } /* Hide header for self messages */
+        .chat-avatar { width: 26px; height: 26px; border-radius: 4px; border: 1px solid var(--user-color, var(--glass-border)); object-fit: cover; }
+        .username { font-family: var(--font-ui); font-size: 11px; color: var(--user-color, var(--text-muted)); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
         
         .message { padding: 16px 20px; font-size: 16px; line-height: 1.5; word-wrap: break-word; position: relative; border-radius: 4px; backdrop-filter: blur(5px); }
         .other .message { background: var(--bubble-other); color: var(--text-main); border: 1px solid var(--glass-border); border-left: 3px solid var(--user-color, var(--glass-border)); }
-        .self .message { background: var(--bubble-self); color: var(--accent-cyan); border: 1px solid rgba(0, 238, 255, 0.3); border-right: 3px solid var(--accent-cyan); text-shadow: 0 0 5px rgba(0, 238, 255, 0.2); }
-        
-        .timestamp { font-family: var(--font-ui); font-size: 10px; letter-spacing: 1px; color: var(--text-muted); margin-top: 6px; padding: 0 4px; opacity: 0.5; transition: opacity 0.2s ease; }
-        .message-wrapper:hover .timestamp { opacity: 1; color: var(--accent-cyan); }
+        .self .message { background: var(--bubble-self); color: var(--accent-cyan); border: 1px solid rgba(0, 238, 255, 0.3); border-right: 3px solid var(--accent-cyan); }
         
         .message-wrapper:hover .message { animation: neonBreath 1.5s infinite alternate ease-in-out; }
-        @keyframes neonBreath {
-            0% { box-shadow: 0 0 5px rgba(0, 238, 255, 0.1); }
-            100% { box-shadow: 0 0 25px var(--accent-cyan), inset 0 0 10px rgba(0, 238, 255, 0.2); }
-        }
+        @keyframes neonBreath { 0% { box-shadow: 0 0 5px rgba(0, 238, 255, 0.1); } 100% { box-shadow: 0 0 20px var(--user-color, var(--accent-cyan)); } }
         
-        .media-attachment { max-width: 100%; border-radius: 4px; margin-top: 8px; border: 1px solid var(--glass-border); transition: filter 0.2s ease; filter: contrast(1.1) brightness(0.9); cursor: zoom-in; }
-        .media-attachment:hover { filter: contrast(1.2) brightness(1.1); }
+        .reply-snippet { background: rgba(0, 0, 0, 0.5); border-left: 2px solid var(--reply-color); padding: 8px 12px; margin-bottom: 10px; border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .reply-snippet:hover { background: rgba(0, 238, 255, 0.1); transform: translateX(4px); }
+        .snippet-name { color: var(--reply-color); font-weight: 700; font-family: var(--font-ui); font-size: 11px; display: block; margin-bottom: 2px; }
+        .snippet-text { color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 250px; }
 
-        /* --- Reply Styling --- */
-        .reply-snippet { background: rgba(0, 0, 0, 0.5); border-left: 2px solid var(--accent-cyan); padding: 10px 14px; margin-bottom: 12px; border-radius: 4px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-muted); }
-        .reply-snippet strong { color: var(--user-color, var(--accent-cyan)); font-family: var(--font-ui); font-size: 10px; text-transform: uppercase; }
-        .reply-snippet:hover { background: rgba(0, 238, 255, 0.1); }
+        .media-attachment { max-width: 100%; border-radius: 4px; margin-top: 8px; border: 1px solid var(--glass-border); }
+        img.media-attachment { cursor: zoom-in; }
+        video.media-attachment { background: #000; outline: none; cursor: pointer; }
 
-        /* --- Holographic Media Viewer --- */
-        #media-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(15px); display: none; align-items: center; justify-content: center; z-index: 2000; cursor: zoom-out; }
-        #media-overlay img { max-width: 90%; max-height: 90%; border: 1px solid var(--accent-cyan); box-shadow: 0 0 50px rgba(0, 238, 255, 0.3); animation: holographicPop 0.3s ease-out; }
-        @keyframes holographicPop { 0% { transform: scale(0.8); opacity: 0; filter: brightness(2); } 100% { transform: scale(1); opacity: 1; filter: brightness(1); } }
+        #media-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px); display: none; align-items: center; justify-content: center; z-index: 2000; cursor: zoom-out; flex-direction: column; gap: 20px; }
+        #media-overlay img, #media-overlay video { max-width: 90%; max-height: 85vh; border: 1px solid var(--accent-cyan); animation: holographicPop 0.3s ease-out; }
+        #media-overlay .media-caption { font-family: var(--font-ui); font-size: 12px; color: var(--text-muted); }
+        @keyframes holographicPop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* --- Date Divider --- */
-        .date-divider { display: flex; align-items: center; justify-content: center; margin: 32px 0 16px 0; position: relative; width: 100%; }
-        .date-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(0, 238, 255, 0.3), transparent); }
-        .date-divider span { background: var(--bg-color); padding: 6px 16px; border: 1px solid var(--glass-border); border-radius: 4px; font-family: var(--font-ui); font-size: 10px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; z-index: 1; }
-
-        /* --- Reply UI --- */
-        .reply-action-btn { position: absolute; top: 50%; transform: translateY(-50%); opacity: 0; background: rgba(0, 238, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 16px; z-index: 5; }
+        .reply-action-btn { position: absolute; top: 50%; transform: translateY(-50%); opacity: 0; background: rgba(0, 238, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .message-wrapper:hover .reply-action-btn { opacity: 1; }
-        .other .reply-action-btn { right: -45px; }
-        .self .reply-action-btn { left: -45px; }
+        .other .reply-action-btn { right: -40px; }
+        .self .reply-action-btn { left: -40px; }
 
-        #reply-modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; display: none; }
-        #reply-modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(10, 15, 30, 0.95); border: 1px solid var(--accent-cyan); padding: 24px; border-radius: 8px; z-index: 1000; width: 90%; max-width: 500px; display: none; flex-direction: column; gap: 16px; }
-        #reply-modal.active, #reply-modal-overlay.active { display: flex; }
+        #typing-indicator { display: none; padding: 8px 24px; font-family: var(--font-ui); font-size: 11px; color: var(--accent-cyan); letter-spacing: 1px; animation: pulse 1.5s infinite; }
+        #typing-indicator.active { display: block; }
 
-        /* --- Typing & Input --- */
-        #typing-indicator { display: none; padding: 0 24px 12px; color: var(--accent-cyan); font-family: var(--font-ui); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-        #input-area { padding: 16px 24px; background: rgba(3, 7, 18, 0.8); border-top: 1px solid var(--glass-border); display: flex; gap: 12px; align-items: flex-end; backdrop-filter: blur(10px); }
+        #input-area { padding: 16px 24px; background: rgba(3, 7, 18, 0.8); border-top: 1px solid var(--glass-border); display: flex; gap: 12px; align-items: flex-end; }
         #input-wrapper { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden; }
-        #chat-input { width: 100%; background: transparent; border: none; color: var(--text-main); padding: 14px 18px; font-size: 15px; outline: none; resize: none; min-height: 48px; max-height: 150px; font-family: var(--font-text); }
-        .send-btn { width: 44px; height: 44px; border-radius: 4px; background: rgba(0, 238, 255, 0.15); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        
-        /* --- File Preview --- */
-        .file-preview-item { width: 40px; height: 40px; border-radius: 4px; overflow: hidden; position: relative; border: 1px solid var(--glass-border); }
-        .file-preview-item img { width: 100%; height: 100%; object-fit: cover; }
-        .file-preview-item .remove-btn { position: absolute; top: -5px; right: -5px; width: 16px; height: 16px; background: var(--accent-magenta); border: none; border-radius: 50%; color: white; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #chat-input { width: 100%; background: transparent; border: none; color: var(--text-main); padding: 14px 18px; font-size: 15px; outline: none; resize: none; min-height: 48px; font-family: var(--font-text); }
+        .btn { font-family: var(--font-ui); background: rgba(0, 238, 255, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 11px; transition: all 0.2s; }
+        .btn:hover { background: rgba(0, 238, 255, 0.2); box-shadow: 0 0 15px rgba(0, 238, 255, 0.3); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: transparent; border-color: var(--text-muted); color: var(--text-muted); }
+        .btn-secondary:hover { border-color: var(--text-main); color: var(--text-main); }
+        .btn-danger { color: var(--accent-magenta); border-color: var(--accent-magenta); }
+        .btn-danger:hover { background: rgba(255, 0, 234, 0.1); box-shadow: 0 0 15px rgba(255, 0, 234, 0.3); }
+
+        .file-preview-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: rgba(0, 238, 255, 0.1); border: 1px solid var(--glass-border); border-radius: 4px; font-size: 12px; color: var(--text-muted); }
+        .file-preview-item img { width: 30px; height: 30px; object-fit: cover; border-radius: 2px; }
+        .file-preview-item .remove-file { cursor: pointer; color: var(--accent-magenta); font-weight: bold; padding: 0 4px; }
+        .file-preview-item .remove-file:hover { color: var(--text-main); }
+
+        .reply-preview-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(0, 238, 255, 0.05); border-bottom: 1px solid var(--glass-border); }
+        .reply-preview-header span { font-size: 12px; color: var(--text-muted); }
+        .reply-preview-header button { background: none; border: none; color: var(--accent-magenta); cursor: pointer; font-family: var(--font-ui); font-size: 11px; }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
     </style>
 </head>
 <body>
 
 <div id="notification-container"></div>
-<div id="media-overlay" onclick="this.style.display='none'"><img id="overlay-img" src=""></div>
+
+<div id="media-overlay" onclick="closeMediaOverlay()">
+    <div id="media-content"></div>
+    <div class="media-caption">Click anywhere to close</div>
+</div>
 
 <div id="login-screen">
     <div class="login-card">
@@ -169,56 +153,48 @@
             <span id="upload-icon">Bio-Scan</span>
             <img id="avatar-preview" src="" alt="Avatar Preview">
         </label>
-        <input type="file" id="avatar-input" accept="image/*">
-        <input type="text" id="username-input" class="login-input" placeholder="Enter Callsign" autocomplete="off">
+        <input type="file" id="avatar-input" accept="image/*" style="display:none">
+        <div class="login-error" id="login-error">Invalid input detected</div>
+        <input type="text" id="username-input" class="login-input" placeholder="Enter Callsign" autocomplete="off" maxlength="20">
         <button class="btn" id="join-btn">Engage</button>
     </div>
 </div>
 
 <div id="app-container">
     <div id="app-header">
-        <div class="header-title">BACKROOM</div>
+        <div class="header-title">
+            <div class="connection-status" id="conn-status"></div>
+            BACKROOM
+        </div>
         <div class="header-controls">
             <div id="user-count-badge">
-                <div class="pulse-dot" id="connection-dot"></div>
                 <span id="count-number">0</span> Active
             </div>
             <button id="invite-btn" class="btn btn-secondary">Uplink</button>
-            <button id="disconnect-btn" class="btn btn-secondary" style="color: var(--accent-magenta); border-color: rgba(255, 0, 234, 0.3);">Sever</button>
+            <button id="logout-btn" class="btn btn-secondary btn-danger">Sever</button>
         </div>
     </div>
 
-    <div id="chat-container">
-        <div id="reply-modal-overlay"></div>
-        <div id="reply-modal">
-            <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:15px">
-                <span style="font-family:var(--font-ui); color:var(--accent-cyan)">Decrypted Sequence</span>
-                <button onclick="closeReplyModal()" style="background:none; border:none; color:var(--accent-magenta); cursor:pointer; font-family:var(--font-ui)">X</button>
-            </div>
-            <div id="modal-body-content" style="font-size:15px; line-height:1.6; color:var(--text-main)"></div>
-        </div>
-    </div>
+    <div id="chat-container"></div>
     
     <div id="typing-indicator">
-        <span id="typing-name">Entity</span> transmitting...
+        <span id="typing-text">Someone is transmitting...</span>
     </div>
     
     <div id="input-area">
-        <label for="file-input" class="btn" style="padding:12px">+</label>
-        <input type="file" id="file-input" multiple style="display:none">
+        <label for="file-input" class="btn" style="padding:12px; display:flex; align-items:center; justify-content:center">+</label>
+        <input type="file" id="file-input" multiple accept="image/*,video/*" style="display:none">
         
         <div id="input-wrapper">
-            <div id="reply-preview" style="display:none; padding:10px; background:rgba(0,238,255,0.05); justify-content:space-between; align-items:center">
-                <span id="reply-preview-text" style="font-size:12px; color:var(--text-muted)"></span>
-                <button onclick="cancelReply()" style="background:none; border:none; color:var(--accent-magenta); cursor:pointer; font-family:var(--font-ui)">X</button>
+            <div id="reply-preview" class="reply-preview-header" style="display:none;">
+                <span id="reply-preview-text"></span>
+                <button onclick="cancelReply()">CANCEL</button>
             </div>
-            <div id="file-preview-area" style="display:flex; gap:5px; padding:5px; flex-wrap:wrap"></div>
+            <div id="file-preview-area" style="display:flex; gap:8px; padding:8px; flex-wrap:wrap;"></div>
             <textarea id="chat-input" placeholder="Input sequence..." rows="1"></textarea>
         </div>
         
-        <button class="send-btn" id="send-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
+        <button class="btn" id="send-btn" style="height:48px; padding:0 20px">SEND</button>
     </div>
 </div>
 
@@ -226,7 +202,6 @@
     const socket = io(); 
     const messageStore = {};
     let activeReplyTarget = null;
-    let lastMessageDate = null;
     let currentUser = { 
         name: 'User', 
         avatarUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300eeff"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4 0-7 2-7 6v1h14v-1c0-4-3-6-7-6z"/></svg>',
@@ -234,8 +209,83 @@
     };
     let selectedFiles = [];
     let isConnected = false;
+    let typingTimeout = null;
 
-    // --- Feature: Decryption Scramble ---
+    // Notification system
+    function showNotification(text, type = 'info') {
+        const container = document.getElementById('notification-container');
+        const notif = document.createElement('div');
+        notif.className = `system-notification ${type === 'error' ? 'error' : ''}`;
+        notif.innerHTML = (type === 'error' ? '◉ ' : '◇ ') + text;
+        container.appendChild(notif);
+        setTimeout(() => {
+            notif.style.opacity = '0';
+            notif.style.transform = 'translateY(-20px)';
+            setTimeout(() => notif.remove(), 400);
+        }, 3000);
+    }
+
+    // Connection status
+    function updateConnectionStatus(connected) {
+        isConnected = connected;
+        const status = document.getElementById('conn-status');
+        if (connected) {
+            status.classList.add('connected');
+            showNotification('Neural link established');
+        } else {
+            status.classList.remove('connected');
+            showNotification('Link severed', 'error');
+        }
+    }
+
+    socket.on('connect', () => {
+        updateConnectionStatus(true);
+        currentUser.id = socket.id;
+        // Re-emit user info if we have it
+        if (currentUser.name !== 'User') {
+            socket.emit('user joined', currentUser);
+        }
+    });
+
+    socket.on('disconnect', () => {
+        updateConnectionStatus(false);
+    });
+
+    socket.on('connect_error', (err) => {
+        showNotification('Connection failed: ' + err.message, 'error');
+    });
+
+    // Session management
+    window.addEventListener('DOMContentLoaded', () => {
+        const saved = localStorage.getItem('futureChatUser');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (parsed.name && parsed.name.trim()) {
+                    currentUser = { ...currentUser, ...parsed };
+                    enterChat();
+                }
+            } catch (e) {
+                localStorage.removeItem('futureChatUser');
+            }
+        }
+    });
+
+    function enterChat() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-container').style.display = 'flex';
+        socket.emit('user joined', currentUser);
+    }
+
+    function logout() {
+        if (confirm('Sever neural link? This will clear your session.')) {
+            localStorage.removeItem('futureChatUser');
+            socket.disconnect();
+            location.reload();
+        }
+    }
+
+    // Text scramble effect
     function scrambleText(element, finalValue) {
         if (!finalValue) return;
         const chars = "!<>-_\\/[]{}—=+*^?#________";
@@ -254,112 +304,107 @@
         }, 40);
     }
 
-    // --- Feature: Media Viewer ---
-    window.viewMedia = (src) => {
-        document.getElementById('overlay-img').src = src;
-        document.getElementById('media-overlay').style.display = 'flex';
-    };
-
-    // --- Helper: Convert HSL to RGB for CSS variables ---
-    function hslToRgb(h, s, l) {
-        s /= 100;
-        l /= 100;
-        const k = n => (n + h / 30) % 12;
-        const a = s * Math.min(l, 1 - l);
-        const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-        return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)];
-    }
-
+    // Color generator
     function stringToColor(str) {
         let hash = 0;
         for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        const hue = Math.abs(hash) % 360;
-        return {
-            hsl: `hsl(${hue}, 100%, 65%)`,
-            rgb: hslToRgb(hue, 100, 65)
-        };
+        return `hsl(${Math.abs(hash) % 360}, 100%, 65%)`;
     }
 
-    // --- Notification System ---
-    function showNotification(text, type = 'info') {
-        const container = document.getElementById('notification-container');
-        const n = document.createElement('div'); 
-        n.className = `system-notification ${type === 'error' ? 'error' : ''}`; 
-        n.innerHTML = type === 'error' ? '⚠ ' + text : '◉ ' + text;
-        container.appendChild(n);
-        setTimeout(() => {
-            n.classList.add('fade-out');
-            setTimeout(() => n.remove(), 400);
-        }, 3000);
-    }
+    // Media overlay
+    window.viewMedia = (src, type = 'image') => {
+        const overlay = document.getElementById('media-overlay');
+        const content = document.getElementById('media-content');
+        content.innerHTML = type === 'video' 
+            ? `<video src="${src}" controls autoplay style="max-width:90%; max-height:85vh; border:1px solid var(--accent-cyan)"></video>`
+            : `<img src="${src}" style="max-width:90%; max-height:85vh; border:1px solid var(--accent-cyan)">`;
+        overlay.style.display = 'flex';
+    };
 
-    // --- Avatar Upload Handler ---
-    document.getElementById('avatar-input').addEventListener('change', function(e) {
+    window.closeMediaOverlay = () => {
+        document.getElementById('media-overlay').style.display = 'none';
+        document.getElementById('media-content').innerHTML = '';
+    };
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeMediaOverlay();
+            if (activeReplyTarget) cancelReply();
+        }
+    });
+
+    // Avatar upload with error handling
+    document.getElementById('avatar-input').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
         
         if (!file.type.startsWith('image/')) {
-            showNotification('Invalid bio-signature format', 'error');
+            showNotification('Invalid format. Use image data.', 'error');
             return;
         }
-        
+
         const reader = new FileReader();
-        reader.onload = function(event) {
-            currentUser.avatarUrl = event.target.result;
-            const preview = document.getElementById('avatar-preview');
-            const label = document.getElementById('avatar-label');
-            const icon = document.getElementById('upload-icon');
-            
-            preview.src = event.target.result;
-            preview.style.display = 'block';
-            icon.style.display = 'none';
-            label.classList.add('has-image');
+        reader.onerror = () => showNotification('Bio-scan failed', 'error');
+        reader.onload = (ev) => {
+            currentUser.avatarUrl = ev.target.result;
+            document.getElementById('avatar-preview').src = ev.target.result;
+            document.getElementById('avatar-preview').style.display = 'block';
+            document.getElementById('upload-icon').style.display = 'none';
+            document.getElementById('avatar-label').classList.add('has-image');
         };
         reader.readAsDataURL(file);
     });
 
-    // --- File Preview with Thumbnails ---
-    function updateFilePreview() {
+    // File handling with previews
+    function updateFilePreviews() {
         const area = document.getElementById('file-preview-area');
-        area.innerHTML = selectedFiles.map((file, index) => {
-            if (file.type.startsWith('image/')) {
+        area.innerHTML = selectedFiles.map((file, idx) => {
+            const isImage = file.type.startsWith('image/');
+            const isVideo = file.type.startsWith('video/');
+            
+            if (isImage) {
                 const url = URL.createObjectURL(file);
                 return `
                     <div class="file-preview-item">
                         <img src="${url}" alt="">
-                        <button class="remove-btn" onclick="removeFile(${index})">×</button>
+                        <span>${file.name.slice(0, 10)}${file.name.length > 10 ? '...' : ''}</span>
+                        <span class="remove-file" onclick="removeFile(${idx})">×</span>
                     </div>
                 `;
             }
+            
             return `
-                <div class="file-preview-item" style="background:var(--accent-cyan); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--bg-color)">
-                    ${file.name.slice(0, 2).toUpperCase()}
-                    <button class="remove-btn" onclick="removeFile(${index})">×</button>
+                <div class="file-preview-item">
+                    <span>${isVideo ? '▶' : '📄'} ${file.name.slice(0, 15)}${file.name.length > 15 ? '...' : ''}</span>
+                    <span class="remove-file" onclick="removeFile(${idx})">×</span>
                 </div>
             `;
         }).join('');
     }
 
-    window.removeFile = (index) => {
-        selectedFiles.splice(index, 1);
-        updateFilePreview();
+    window.removeFile = (idx) => {
+        selectedFiles.splice(idx, 1);
+        updateFilePreviews();
         if (selectedFiles.length === 0) {
             document.getElementById('file-input').value = '';
         }
     };
 
     document.getElementById('file-input').addEventListener('change', (e) => {
-        selectedFiles = Array.from(e.target.files);
-        updateFilePreview();
+        selectedFiles = Array.from(e.target.files).slice(0, 5); // Limit to 5 files
+        if (e.target.files.length > 5) {
+            showNotification('Limited to 5 data packets', 'error');
+        }
+        updateFilePreviews();
     });
 
-    // --- Reply System ---
+    // Reply system
     window.initiateReply = (id) => {
         const msg = messageStore[id];
         if (!msg) return;
-        
         activeReplyTarget = msg;
-        document.getElementById('reply-preview-text').innerText = `Replying to ${msg.user.name}: ${msg.text?.slice(0, 30) || 'Media'}${msg.text?.length > 30 ? '...' : ''}`;
+        document.getElementById('reply-preview-text').innerText = `Replying to ${msg.user.name}: ${msg.text?.slice(0, 40) || '[Attachment]'}${msg.text?.length > 40 ? '...' : ''}`;
         document.getElementById('reply-preview').style.display = 'flex';
         document.getElementById('chat-input').focus();
     };
@@ -369,166 +414,126 @@
         document.getElementById('reply-preview').style.display = 'none';
     };
 
-    window.closeReplyModal = () => {
-        document.getElementById('reply-modal').classList.remove('active');
-        document.getElementById('reply-modal-overlay').classList.remove('active');
+    window.scrollToMessage = (id) => {
+        // In a real app, this would scroll to and highlight the message
+        const msg = messageStore[id];
+        if (msg) {
+            showNotification(`Viewing message from ${msg.user.name}`);
+        }
     };
 
-    // --- Message Rendering with Reply Support ---
-    function renderMessage(data, isHistoryLoad = false) {
+    // Message rendering with reply support
+    function renderMessage(data, isHistory = false) {
         const container = document.getElementById('chat-container');
         
-        // Use socket ID for reliable self-detection if available
-        const isSelf = data.user.id ? data.user.id === socket.id : data.user.name === currentUser.name;
-        
-        const msgDate = data.date || new Date().toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
-        if (msgDate !== lastMessageDate) {
-            const dateDivider = document.createElement('div');
-            dateDivider.className = 'date-divider';
-            dateDivider.innerHTML = `<span>${msgDate}</span>`;
-            container.appendChild(dateDivider);
-            lastMessageDate = msgDate;
-        }
+        // Robust self-detection using socket ID
+        const isSelf = data.user.id === socket.id || data.user.name === currentUser.name;
+        const userColor = stringToColor(data.user.name);
 
         if (!data.id) data.id = Math.random().toString(36).substr(2, 9);
         messageStore[data.id] = data;
-        
-        const userColorObj = stringToColor(data.user.name);
-        const userColor = userColorObj.hsl;
-        const userColorRgb = userColorObj.rgb.join(',');
 
         const div = document.createElement('div');
         div.className = `message-wrapper ${isSelf ? 'self' : 'other'}`;
+        div.id = `msg-${data.id}`;
         div.style.setProperty('--user-color', userColor);
-        div.style.setProperty('--user-color-rgb', userColorRgb);
-        
-        // Build reply snippet if this is a reply
+
+        // Reply snippet
         let replyHtml = '';
         if (data.replyTo) {
-            const replyTarget = typeof data.replyTo === 'string' ? messageStore[data.replyTo] : data.replyTo;
-            if (replyTarget) {
-                replyHtml = `
-                    <div class="reply-snippet" onclick="showReplyModal('${data.replyTo.id || data.replyTo}')">
-                        <strong>${replyTarget.user.name}</strong>
-                        <span>${replyTarget.text?.slice(0, 50) || 'Media attachment'}${replyTarget.text?.length > 50 ? '...' : ''}</span>
-                    </div>
-                `;
-            }
+            const replyColor = stringToColor(data.replyTo.user.name);
+            const targetId = data.replyTo.id || '';
+            replyHtml = `
+                <div class="reply-snippet" style="--reply-color: ${replyColor}" onclick="scrollToMessage('${targetId}')" title="Click to view original">
+                    <span class="snippet-name" style="color:${replyColor}">↰ ${data.replyTo.user.name}</span>
+                    <span class="snippet-text">${data.replyTo.text || '[Attachment]'}</span>
+                </div>`;
         }
-        
+
+        // Media attachments
         let mediaHtml = '';
         if (data.files && data.files.length > 0) {
-            mediaHtml = data.files.map(f => 
-                `<img src="${f.data}" class="media-attachment" onclick="viewMedia('${f.data}')" alt="attachment">`
-            ).join('');
+            mediaHtml = data.files.map(f => {
+                if (f.type && f.type.startsWith('video/')) {
+                    return `<video src="${f.data}" controls class="media-attachment" onclick="event.stopPropagation(); window.viewMedia('${f.data}', 'video')"></video>`;
+                }
+                return `<img src="${f.data}" class="media-attachment" onclick="window.viewMedia('${f.data}', 'image')" alt="attachment">`;
+            }).join('');
         }
 
         div.innerHTML = `
-            ${!isSelf ? `
-                <div class="user-header">
-                    <img src="${data.user.avatarUrl || currentUser.avatarUrl}" class="chat-avatar" style="border-color:${userColor}">
-                    <span class="username" style="color:${userColor};--user-color-rgb:${userColorRgb}">${data.user.name}</span>
-                </div>
-            ` : ''}
+            <div class="user-header">
+                <img src="${data.user.avatarUrl || currentUser.avatarUrl}" class="chat-avatar" onerror="this.src='${currentUser.avatarUrl}'">
+                <span class="username">${data.user.name}</span>
+            </div>
             <div class="message">
                 ${replyHtml}
                 <div class="text-content"></div>
                 ${mediaHtml}
             </div>
-            <span class="timestamp">${data.timestamp || new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
-            <div class="reply-action-btn" onclick="initiateReply('${data.id}')" title="Reply">↰</div>
+            <span class="timestamp" style="font-family:var(--font-ui); font-size:10px; color:var(--text-muted); margin-top:4px; opacity:0.6">${data.timestamp || ''}</span>
+            <div class="reply-action-btn" onclick="initiateReply('${data.id}')" title="Reply to this">↰</div>
         `;
         
         container.appendChild(div);
+        
         const textTarget = div.querySelector('.text-content');
-
-        if (!isHistoryLoad && !isSelf && data.text) {
+        if (!isHistory && !isSelf && data.text) {
             scrambleText(textTarget, data.text);
         } else {
             textTarget.innerText = data.text || '';
         }
 
-        container.scrollTop = container.scrollHeight;
+        // Auto-scroll if near bottom
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        if (isNearBottom || isSelf) {
+            container.scrollTop = container.scrollHeight;
+        }
     }
 
-    window.showReplyModal = (msgId) => {
-        const msg = messageStore[msgId];
-        if (!msg) return;
-        
-        const modal = document.getElementById('reply-modal');
-        const overlay = document.getElementById('reply-modal-overlay');
-        const content = document.getElementById('modal-body-content');
-        
-        let mediaHtml = '';
-        if (msg.files && msg.files.length > 0) {
-            mediaHtml = msg.files.map(f => 
-                `<img src="${f.data}" style="max-width:100%; border-radius:4px; margin-top:10px; border:1px solid var(--glass-border)" onclick="viewMedia('${f.data}')">`
-            ).join('');
-        }
-        
-        content.innerHTML = `
-            <div style="margin-bottom:10px; font-family:var(--font-ui); font-size:11px; color:var(--accent-cyan); text-transform:uppercase">
-                ${msg.user.name} — ${msg.timestamp}
-            </div>
-            <div style="color:var(--text-main); margin-bottom:10px">${msg.text || ''}</div>
-            ${mediaHtml}
-        `;
-        
-        modal.classList.add('active');
-        overlay.classList.add('active');
-    };
-
-    // --- Message Sending ---
+    // Send message
     async function handleSend() {
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
 
-        // Feature: Slash Commands
+        // Commands
         if (text.startsWith('/')) {
-            const command = text.split(' ')[0].toLowerCase();
-            if (command === '/clear') {
-                document.querySelectorAll('.message-wrapper, .date-divider').forEach(el => el.remove());
-                lastMessageDate = null;
-                input.value = ''; 
-                showNotification('Buffer cleared');
-                return;
-            }
-            if (command === '/ping') {
-                const start = Date.now();
-                socket.emit('ping', () => {
-                    const latency = Date.now() - start;
-                    showNotification(`Link Latency: ${latency}ms`);
-                });
-                input.value = ''; 
-                return;
-            }
-            if (command === '/help') {
-                showNotification('Commands: /clear, /ping, /help');
-                input.value = '';
-                return;
+            const [cmd, ...args] = text.slice(1).split(' ');
+            switch(cmd.toLowerCase()) {
+                case 'clear':
+                    document.getElementById('chat-container').innerHTML = '';
+                    input.value = '';
+                    return;
+                case 'logout':
+                    logout();
+                    return;
+                case 'help':
+                    showNotification('Commands: /clear, /logout, /help');
+                    input.value = '';
+                    return;
             }
         }
 
         if (!text && selectedFiles.length === 0) return;
-        
-        const filePromises = selectedFiles.map(f => new Promise((res, rej) => {
-            const r = new FileReader(); 
-            r.onload = e => res({type: f.type, name: f.name, data: e.target.result}); 
-            r.onerror = rej;
-            r.readAsDataURL(f);
-        }));
+        if (!isConnected) {
+            showNotification('No active neural link', 'error');
+            return;
+        }
 
         try {
-            const files = await Promise.all(filePromises);
-            const messageId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-            
+            const files = await Promise.all(selectedFiles.map(f => new Promise((res, rej) => {
+                const r = new FileReader();
+                r.onerror = rej;
+                r.onload = e => res({type: f.type, name: f.name, data: e.target.result});
+                r.readAsDataURL(f);
+            })));
+
             const msgData = {
-                id: messageId,
+                id: Math.random().toString(36).substr(2, 9),
                 user: currentUser,
                 text,
-                files: files,
+                files,
                 timestamp: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-                date: new Date().toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' }),
                 replyTo: activeReplyTarget ? {
                     id: activeReplyTarget.id,
                     user: activeReplyTarget.user,
@@ -536,94 +541,97 @@
                 } : null
             };
 
-            // Optimistic render for self
+            // Optimistic render
             renderMessage(msgData);
-            
             socket.emit('chat message', msgData);
-            
+
             input.value = '';
             selectedFiles = [];
             document.getElementById('file-preview-area').innerHTML = '';
             cancelReply();
         } catch (err) {
-            showNotification('Transmission failed', 'error');
-            console.error('File read error:', err);
+            showNotification('Transmission failed: ' + err.message, 'error');
         }
     }
 
-    // --- Event Listeners ---
-    document.getElementById('send-btn').onclick = handleSend;
-    document.getElementById('chat-input').addEventListener('keydown', (e) => { 
-        if(e.key==='Enter' && !e.shiftKey) { 
-            e.preventDefault(); 
-            handleSend(); 
-        } 
+    // Event listeners
+    document.getElementById('send-btn').addEventListener('click', handleSend);
+    
+    document.getElementById('chat-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
     });
 
-    // --- Login Handler ---
+    // Login handlers
     document.getElementById('join-btn').addEventListener('click', () => {
-        const val = document.getElementById('username-input').value.trim();
-        if (val) {
-            currentUser.name = val;
-            currentUser.id = socket.id;
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-container').style.display = 'flex';
-            showNotification(`Link established as ${val}`);
-            socket.emit('user joined', currentUser);
-        } else {
-            showNotification('Callsign required', 'error');
+        const input = document.getElementById('username-input');
+        const val = input.value.trim();
+        const errorDiv = document.getElementById('login-error');
+        
+        if (!val || val.length < 2) {
+            errorDiv.innerText = 'Callsign must be 2-20 characters';
+            errorDiv.style.display = 'block';
+            input.style.borderColor = 'var(--accent-magenta)';
+            return;
         }
+        
+        if (!/^[a-zA-Z0-9_-]+$/.test(val)) {
+            errorDiv.innerText = 'Alphanumeric, dash, underscore only';
+            errorDiv.style.display = 'block';
+            input.style.borderColor = 'var(--accent-magenta)';
+            return;
+        }
+        
+        errorDiv.style.display = 'none';
+        input.style.borderColor = '';
+        currentUser.name = val;
+        currentUser.id = socket.id;
+        localStorage.setItem('futureChatUser', JSON.stringify(currentUser));
+        enterChat();
     });
 
     document.getElementById('username-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') document.getElementById('join-btn').click();
     });
 
-    // --- Header Controls ---
+    document.getElementById('username-input').addEventListener('input', () => {
+        document.getElementById('login-error').style.display = 'none';
+        document.getElementById('username-input').style.borderColor = '';
+    });
+
+    // Header controls
     document.getElementById('invite-btn').addEventListener('click', () => {
-        const url = window.location.href;
-        navigator.clipboard.writeText(url).then(() => {
+        navigator.clipboard.writeText(window.location.href).then(() => {
             showNotification('Uplink URL copied to buffer');
         }).catch(() => {
-            showNotification('Copy failed - manual extraction required', 'error');
+            showNotification('Manual copy required', 'error');
         });
     });
 
-    document.getElementById('disconnect-btn').addEventListener('click', () => {
-        if (confirm('Sever neural link? This will terminate your session.')) {
-            socket.disconnect();
-            showNotification('Neural link severed', 'error');
-            setTimeout(() => location.reload(), 1500);
-        }
+    document.getElementById('logout-btn').addEventListener('click', logout);
+
+    // Typing indicator
+    document.getElementById('chat-input').addEventListener('input', () => {
+        if (!isConnected) return;
+        socket.emit('typing', { isTyping: true, user: currentUser });
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            socket.emit('typing', { isTyping: false, user: currentUser });
+        }, 2000);
     });
 
-    // --- Socket Event Handlers ---
-    socket.on('connect', () => {
-        isConnected = true;
-        currentUser.id = socket.id;
-        document.getElementById('connection-dot').classList.remove('offline');
-        showNotification('Neural link established');
-    });
-
-    socket.on('disconnect', (reason) => {
-        isConnected = false;
-        document.getElementById('connection-dot').classList.add('offline');
-        showNotification(`Link severed: ${reason}`, 'error');
-    });
-
-    socket.on('connect_error', (err) => {
-        showNotification(`Connection error: ${err.message}`, 'error');
-    });
-
+    // Socket events
     socket.on('chat message', (data) => {
-        // Don't re-render if we sent it (optimistic rendering handled it)
+        // Don't re-render if we sent it (optimistic rendering)
         if (data.user.id !== socket.id) {
             renderMessage(data);
         }
     });
 
-    socket.on('load history', (history) => { 
-        history.forEach(m => renderMessage(m, true)); 
+    socket.on('load history', (history) => {
+        history.forEach(m => renderMessage(m, true));
     });
 
     socket.on('user count', (count) => {
@@ -642,27 +650,21 @@
 
     socket.on('typing', (data) => {
         const indicator = document.getElementById('typing-indicator');
-        const nameSpan = document.getElementById('typing-name');
-        if (data.isTyping) {
-            nameSpan.innerText = data.user.name;
-            indicator.style.display = 'block';
+        const text = document.getElementById('typing-text');
+        if (data.isTyping && data.user.id !== socket.id) {
+            text.innerText = `${data.user.name} is transmitting...`;
+            indicator.classList.add('active');
         } else {
-            indicator.style.display = 'none';
+            indicator.classList.remove('active');
         }
     });
 
-    // --- Typing Indicator ---
-    let typingTimeout;
-    document.getElementById('chat-input').addEventListener('input', () => {
-        socket.emit('typing', { isTyping: true, user: currentUser });
-        clearTimeout(typingTimeout);
-        typingTimeout = setTimeout(() => {
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (isConnected) {
             socket.emit('typing', { isTyping: false, user: currentUser });
-        }, 1000);
+        }
     });
-
-    // --- Close modal on overlay click ---
-    document.getElementById('reply-modal-overlay').addEventListener('click', closeReplyModal);
 </script>
 </body>
 </html>
