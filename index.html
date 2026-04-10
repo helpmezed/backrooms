@@ -67,8 +67,10 @@
         @keyframes springIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
 
         .user-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-family: var(--font-ui); font-size: 11px; }
-        .self .user-header { display: none; }
+        .self .user-header { display: flex; justify-content: flex-end; }
+        .self .username { display: none; }
         .username { color: var(--user-color, var(--text-muted)); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .timestamp { margin-left: auto; font-size: 10px; color: var(--text-muted); font-family: var(--font-ui); padding-left: 12px; white-space: nowrap; }
 
         .message { padding: 14px 18px; border-radius: 4px; backdrop-filter: blur(5px); border: 1px solid var(--glass-border); position: relative; font-size: 15px; line-height: 1.5; word-wrap: break-word; max-width: 100%; }
         .other .message { border-left: 3px solid var(--user-color, var(--accent-cyan)); background: var(--bubble-other); color: var(--text-main); }
@@ -103,6 +105,14 @@
         #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2000; background: var(--bg-color); backdrop-filter: blur(10px); }
         .login-card { text-align: center; background: var(--glass-bg); padding: 40px; border-radius: 8px; border: 1px solid var(--glass-border); max-width: 360px; width: 90%; }
         .login-input { padding: 14px; margin-bottom: 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; border-radius: 4px; width: 100%; }
+
+        /* --- Mobile sidebar toggle --- */
+        #sidebar-toggle { display: none; background: none; border: 1px solid var(--glass-border); color: var(--accent-cyan); font-size: 18px; line-height: 1; cursor: pointer; padding: 4px 10px; border-radius: 4px; }
+        @media (max-width: 767px) {
+            #sidebar-toggle { display: block; }
+            #sidebar { position: fixed; right: 0; top: 0; bottom: 0; z-index: 500; transform: translateX(100%); transition: transform 0.3s; }
+            #sidebar.open { transform: translateX(0); box-shadow: -10px 0 40px rgba(0,0,0,0.5); }
+        }
     </style>
 </head>
 <body>
@@ -122,7 +132,10 @@
     <div id="chat-main">
         <header id="app-header" style="padding:16px 24px; border-bottom:1px solid var(--glass-border); font-family:var(--font-ui); color:var(--accent-cyan); display:flex; align-items:center; justify-content:space-between;">
             <div><span class="conn-status" id="conn-dot"></span> BACKROOM TERMINAL</div>
-            <div id="connection-text" style="font-size:11px;">OFFLINE</div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <span id="connection-text" style="font-size:11px;">OFFLINE</span>
+                <button id="sidebar-toggle">&#9776;</button>
+            </div>
         </header>
         
         <div id="chat-container"></div>
@@ -154,15 +167,24 @@
     let selectedFiles = [];
     let isConnected = false;
     let typingTimeout = null;
-    const messageStore = {};
+    const typingUsers = new Map(); // socketId -> name
+
+    // Sanitize user-provided strings before inserting into the DOM
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
 
     function showNotification(text, type = 'info') {
         const container = document.getElementById('notification-container');
         const n = document.createElement('div');
-        n.className = `system-notification ${type === 'error' ? 'error' : ''}`;
-        n.innerHTML = text;
+        n.className = `system-notification${type === 'error' ? ' error' : ''}`;
+        n.textContent = text;
         container.appendChild(n);
-        setTimeout(() => { if (n.parentNode) n.remove(); }, 3000);
+        setTimeout(() => n.remove(), 3000);
     }
 
     socket.on('connect', () => {
@@ -170,6 +192,7 @@
         currentUser.id = socket.id;
         document.getElementById('conn-dot').classList.add('online');
         document.getElementById('connection-text').innerText = 'ONLINE';
+        // Re-join on connect/reconnect if the user already has a callsign
         if (currentUser.name !== 'User') socket.emit('user joined', currentUser);
     });
 
@@ -182,14 +205,18 @@
     window.addEventListener('DOMContentLoaded', () => {
         const saved = localStorage.getItem('futureChatUser');
         if (saved) {
-            currentUser = { ...currentUser, ...JSON.parse(saved) };
-            enterChat();
+            try {
+                currentUser = { ...currentUser, ...JSON.parse(saved) };
+                enterChat();
+            } catch (e) { localStorage.removeItem('futureChatUser'); }
         }
     });
 
     function enterChat() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-container').style.display = 'flex';
+        // Emit if already connected (handles localStorage restore after socket is up)
+        if (isConnected) socket.emit('user joined', currentUser);
     }
 
     async function processFile(file) {
@@ -204,7 +231,7 @@
                 if (width > MAX_WIDTH) { height = Math.round(height * MAX_WIDTH / width); width = MAX_WIDTH; }
                 canvas.width = width; canvas.height = height;
                 canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                canvas.toBlob((blob) => resolve(new File([blob], file.name, {type: 'image/jpeg'})), 'image/jpeg', 0.8);
+                canvas.toBlob((blob) => resolve(new File([blob], file.name, { type: 'image/jpeg' })), 'image/jpeg', 0.8);
             };
         });
     }
@@ -219,30 +246,62 @@
         const container = document.getElementById('chat-container');
         const isSelf = data.user.id === socket.id;
         const userColor = stringToColor(data.user.name);
-        
-        const div = document.createElement('div');
-        div.className = `message-wrapper ${isSelf ? 'self' : 'other'}`;
-        div.style.setProperty('--user-color', userColor);
 
-        let mediaHtml = '';
-        if (data.files) {
+        const wrapper = document.createElement('div');
+        wrapper.className = `message-wrapper ${isSelf ? 'self' : 'other'}`;
+        wrapper.style.setProperty('--user-color', userColor);
+
+        // Header: username + timestamp
+        const header = document.createElement('div');
+        header.className = 'user-header';
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'username';
+        nameSpan.style.color = userColor;
+        nameSpan.textContent = data.user.name; // textContent, not innerHTML
+        const tsSpan = document.createElement('span');
+        tsSpan.className = 'timestamp';
+        tsSpan.textContent = data.timestamp || '';
+        header.appendChild(nameSpan);
+        header.appendChild(tsSpan);
+
+        // Message bubble
+        const bubble = document.createElement('div');
+        bubble.className = `message${data.isAlert ? ' tactical-alert' : ''}`;
+        if (data.text) bubble.appendChild(document.createTextNode(data.text));
+
+        // Media attachments
+        if (data.files?.length) {
             data.files.forEach(f => {
-                if (f.type?.startsWith('video/')) mediaHtml += `<video src="${f.data}" controls class="media-attachment"></video>`;
-                else mediaHtml += `<img src="${f.data}" class="media-attachment" onclick="window.open('${f.data}')">`;
+                let media;
+                if (f.type?.startsWith('video/')) {
+                    media = document.createElement('video');
+                    media.src = f.data;
+                    media.controls = true;
+                } else {
+                    media = document.createElement('img');
+                    media.src = f.data;
+                    media.addEventListener('click', () => openLightbox(f.data));
+                }
+                media.className = 'media-attachment';
+                bubble.appendChild(media);
             });
         }
 
-        div.innerHTML = `
-            <div class="user-header">
-                <span class="username" style="color:${userColor}">${data.user.name}</span>
-            </div>
-            <div class="message ${data.isAlert ? 'tactical-alert' : ''}">
-                ${data.text || ''}
-                ${mediaHtml}
-            </div>
-        `;
-        container.appendChild(div);
+        wrapper.appendChild(header);
+        wrapper.appendChild(bubble);
+        container.appendChild(wrapper);
         container.scrollTop = container.scrollHeight;
+    }
+
+    function openLightbox(src) {
+        const lb = document.createElement('div');
+        lb.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:zoom-out';
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.cssText = 'max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px;border:1px solid rgba(0,238,255,0.2)';
+        lb.appendChild(img);
+        lb.addEventListener('click', () => lb.remove());
+        document.body.appendChild(lb);
     }
 
     async function handleSend() {
@@ -250,64 +309,134 @@
         let text = input.value.trim();
         let isAlert = false;
 
-        if (text.startsWith('/alert ')) { text = text.replace('/alert ', ''); isAlert = true; }
+        if (text.startsWith('/alert ')) { text = text.slice(7); isAlert = true; }
         if (!text && selectedFiles.length === 0) return;
+
+        // Stop typing indicator
+        clearTimeout(typingTimeout);
+        socket.emit('typing stop');
 
         const processedFiles = await Promise.all(selectedFiles.map(async f => {
             const processed = await processFile(f);
             return new Promise(res => {
                 const r = new FileReader();
-                r.onload = e => res({type: processed.type, data: e.target.result});
+                r.onload = e => res({ type: processed.type, data: e.target.result });
                 r.readAsDataURL(processed);
             });
         }));
 
-        const msgData = { 
-            id: Math.random().toString(36).substr(2, 9),
-            user: currentUser, 
-            text, 
-            files: processedFiles, 
-            isAlert, 
-            timestamp: new Date().toLocaleTimeString() 
+        const msgData = {
+            id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+            user: currentUser,
+            text,
+            files: processedFiles,
+            isAlert,
+            timestamp: new Date().toLocaleTimeString()
         };
 
         renderMessage(msgData);
         socket.emit('chat message', msgData);
-        input.value = ''; selectedFiles = [];
+        input.value = '';
+        selectedFiles = [];
         document.getElementById('file-preview-area').style.display = 'none';
+        autoResize(input);
     }
 
-    document.getElementById('join-btn').onclick = () => {
-        const val = document.getElementById('username-input').value.trim();
-        if (val) {
-            currentUser.name = val;
-            currentUser.id = socket.id;
-            localStorage.setItem('futureChatUser', JSON.stringify(currentUser));
-            enterChat();
-            socket.emit('user joined', currentUser);
+    // --- Typing indicator ---
+    function updateTypingIndicator() {
+        const el = document.getElementById('typing-indicator');
+        const textEl = document.getElementById('typing-text');
+        const names = Array.from(typingUsers.values());
+        if (names.length === 0) {
+            el.classList.remove('active');
+        } else {
+            const label = names.length === 1
+                ? `${escapeHtml(names[0])} is transmitting...`
+                : `${names.slice(0, -1).map(escapeHtml).join(', ')} & ${escapeHtml(names.at(-1))} are transmitting...`;
+            textEl.textContent = label;
+            el.classList.add('active');
         }
-    };
+    }
 
-    document.getElementById('send-btn').onclick = handleSend;
-    document.getElementById('chat-input').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
+    // --- Auto-resize textarea ---
+    function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
 
-    document.getElementById('file-input').onchange = (e) => {
+    // --- Login ---
+    function doJoin() {
+        const val = document.getElementById('username-input').value.trim();
+        if (!val) { document.getElementById('login-error').style.display = 'block'; return; }
+        currentUser.name = val;
+        currentUser.id = socket.id;
+        localStorage.setItem('futureChatUser', JSON.stringify(currentUser));
+        enterChat();
+    }
+
+    document.getElementById('join-btn').addEventListener('click', doJoin);
+    document.getElementById('username-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') doJoin(); });
+
+    // --- Chat input ---
+    document.getElementById('send-btn').addEventListener('click', handleSend);
+    document.getElementById('chat-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+    });
+    document.getElementById('chat-input').addEventListener('input', (e) => {
+        autoResize(e.target);
+        socket.emit('typing');
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => socket.emit('typing stop'), 2000);
+    });
+
+    // --- File picker ---
+    document.getElementById('file-input').addEventListener('change', (e) => {
         selectedFiles = Array.from(e.target.files);
         const area = document.getElementById('file-preview-area');
         area.style.display = 'flex';
-        area.innerHTML = selectedFiles.map(f => `<div class="file-preview-item">${f.name}</div>`).join('');
-    };
+        area.innerHTML = '';
+        selectedFiles.forEach(f => {
+            const item = document.createElement('div');
+            item.className = 'file-preview-item';
+            item.textContent = f.name;
+            area.appendChild(item);
+        });
+    });
 
-    socket.on('chat message', (data) => { if(data.user.id !== socket.id) renderMessage(data); });
+    // --- Mobile sidebar toggle ---
+    document.getElementById('sidebar-toggle').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    // --- Socket events ---
+    socket.on('chat message', (data) => { if (data.user.id !== socket.id) renderMessage(data); });
     socket.on('load history', (h) => h.forEach(renderMessage));
+
+    socket.on('typing', (data) => {
+        typingUsers.set(data.id, data.name);
+        updateTypingIndicator();
+    });
+    socket.on('typing stop', (data) => {
+        typingUsers.delete(data.id);
+        updateTypingIndicator();
+    });
+
     socket.on('user list', (users) => {
-        document.getElementById('online-count').innerText = users.length;
-        document.getElementById('user-list').innerHTML = users.map(u => `
-            <div class="user-list-item">
-                <div class="status-dot"></div>
-                <span style="color:${stringToColor(u.name)}">${u.name}</span>
-            </div>
-        `).join('');
+        document.getElementById('online-count').textContent = users.length;
+        const list = document.getElementById('user-list');
+        list.innerHTML = '';
+        users.forEach(u => {
+            const item = document.createElement('div');
+            item.className = 'user-list-item';
+            const dot = document.createElement('div');
+            dot.className = 'status-dot';
+            const name = document.createElement('span');
+            name.style.color = stringToColor(u.name);
+            name.textContent = u.name; // textContent, not innerHTML
+            item.appendChild(dot);
+            item.appendChild(name);
+            list.appendChild(item);
+        });
     });
 </script>
 </body>
